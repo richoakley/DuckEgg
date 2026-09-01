@@ -1,0 +1,232 @@
+{
+  "schema": "eggroll-walking-autopatch-evidence-v1",
+  "claim_scope": "production-runtime digital twin; no physical robot",
+  "training": {
+    "job_id": "6a95de9721c5aa7c8364a0ec",
+    "private_repository": "richoakley/eggroll-walking-wedge-train-20260831-v1",
+    "source_commit": "333d0a942fbf768f4acbc08c9f0261b053a31117",
+    "campaign_sha256": "e2ddf3a989c14aad12301ef2e9713390377be5cb52030bfbce58fd30c9ffdd20",
+    "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "heldout_bank_sha256": "9deed06a134abe4f7179cc1ad5bc1a328d057415574552bbb5a731f5f0173093",
+    "nominal_bank_sha256": "65ad816635cc0ddfcc3d25d7e68b5caf4ee9ed292ce3ae3c1fc1aade066334cf",
+    "shifted_profile_sha256": "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+    "population": 512,
+    "rank": 4,
+    "generations": 100,
+    "worlds_per_candidate": 4,
+    "candidate_evaluations": 51200,
+    "optimization_world_rollouts": 204800,
+    "requested_optimization_simulator_steps": 51200000,
+    "startup_world_constructions": 464,
+    "wall_seconds": 13698.733898698003,
+    "comparative_sample_efficiency_claim": false
+  },
+  "selection": {
+    "generation": 85,
+    "adapted_policy_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+    "remote_onnx_parity_max_abs_error": 0.0000030994415283203125,
+    "independent_onnx_parity_max_abs_error": 0.000000476837158203125,
+    "patch_scope": "final affine weight and bias only",
+    "trainable_parameters": 1806
+  },
+  "behavioral_gate_series": {
+    "generation_50": {
+      "shifted_terminal_successes": 32,
+      "shifted_min_command_successes": 8,
+      "nominal_terminal_successes": 31
+    },
+    "generation_55": {
+      "shifted_terminal_successes": 32,
+      "shifted_min_command_successes": 8,
+      "nominal_terminal_successes": 32
+    }
+  },
+  "production_runtime_playback": {
+    "local_evidence_directory": "/private/tmp/eggroll-walking-wedge-paired-evidence-v1",
+    "paired_manifest_sha256": "018a05616e1eb3581d5248852a17d9bc86018b4ca38381698de09a3a199fd714",
+    "paired_bank_file_sha256": "784637202e08b5ff048a9e49969d46a8a4729e126be4c4a3b4fbe0fe6ce7655f",
+    "accepted_runtime_episodes": 128,
+    "runtime_trace_audits_passed": 128,
+    "accepted_episode_videos": 128,
+    "rejected_transport_attempts_preserved": 3,
+    "shifted": {
+      "source_terminal_successes": 24,
+      "adapted_terminal_successes": 32,
+      "source_terminal_stability_passes": 25,
+      "adapted_terminal_stability_passes": 32,
+      "source_mean_upright_fraction": 0.9632828706233593,
+      "adapted_mean_upright_fraction": 1.0,
+      "source_mean_forward_displacement_m": 1.0538817113265395,
+      "adapted_mean_forward_displacement_m": 1.8085509836673737,
+      "source_mean_forward_velocity_rmse_mps": 0.14327874570153654,
+      "adapted_mean_forward_velocity_rmse_mps": 0.11028012353926897,
+      "per_command_source_successes": [4, 7, 8, 5],
+      "per_command_adapted_successes": [8, 8, 8, 8]
+    },
+    "nominal": {
+      "source_terminal_successes": 32,
+      "adapted_terminal_successes": 31,
+      "source_terminal_stability_passes": 32,
+      "adapted_terminal_stability_passes": 32,
+      "source_mean_upright_fraction": 1.0,
+      "adapted_mean_upright_fraction": 1.0,
+      "source_mean_forward_displacement_m": 0.7476550443097949,
+      "adapted_mean_forward_displacement_m": 0.6947663114406168,
+      "source_mean_forward_velocity_rmse_mps": 0.19021285558119416,
+      "adapted_mean_forward_velocity_rmse_mps": 0.2069791746325791,
+      "per_command_source_successes": [8, 8, 8, 8],
+      "per_command_adapted_successes": [8, 8, 7, 8]
+    },
+    "maximum_runtime_trace_abs_error": {
+      "onnx_raw_action": 0.0,
+      "previous_raw_action": 0.0,
+      "action_scale_and_home_offset": 0.0,
+      "lowpass_filter": 0.0000000000000008881784197001252,
+      "state_filtered_target": 0.0,
+      "safety_applied_target": 0.0,
+      "robotio_applied_target": 0.0
+    }
+  },
+  "confirmation_production_runtime_playback": {
+    "job_id": "6a9671d921c5aa7c8364ab6b",
+    "private_repository": "richoakley/eggroll-walking-wedge-confirmation-20260901-v1",
+    "artifact_prefix": "confirmation-v3",
+    "paired_manifest_sha256": "3a694e6b845c203789e5979882ec3132b98f6e6baac9f46728a72bc9e44f9d4a",
+    "paired_bank_file_sha256": "dfd523bc778d714eef36eec3d9ee64f430f1af3cf2910277aef466c3b0bd6955",
+    "input_manifest_sha256": "ccd8da659ba23b19bbc82691fb2e17ec4955652837c0959fb588048a04f83421",
+    "cases": 32,
+    "seed_overlap_with_first_bank": 0,
+    "accepted_runtime_episodes": 64,
+    "runtime_trace_audits_passed": 64,
+    "accepted_episode_videos": 64,
+    "rejected_transport_attempts_preserved": 1,
+    "source_terminal_successes": 23,
+    "adapted_terminal_successes": 32,
+    "source_terminal_stability_passes": 25,
+    "adapted_terminal_stability_passes": 32,
+    "source_mean_upright_fraction": 0.9728121954925784,
+    "adapted_mean_upright_fraction": 1.0,
+    "source_mean_forward_displacement_m": 1.0052408310584724,
+    "adapted_mean_forward_displacement_m": 1.8128710985183716,
+    "source_mean_forward_velocity_rmse_mps": 0.13297501858323812,
+    "adapted_mean_forward_velocity_rmse_mps": 0.1143644202966243,
+    "per_command_source_successes": [8, 5, 6, 4],
+    "per_command_adapted_successes": [8, 8, 8, 8],
+    "lost_source_successes": 0,
+    "repaired_source_failures": 9,
+    "maximum_runtime_trace_abs_error": 0.0000000000000004440892098500626
+  },
+  "excluded_pre_rollout_jobs": [
+    {
+      "job_id": "6a966c1b0718b0f6d890b66e",
+      "reason": "harness/runtime-snapshot failure before rollout",
+      "behavioral_evidence_included": false
+    },
+    {
+      "job_id": "6a966eef0718b0f6d890b6dc",
+      "reason": "harness/runtime-snapshot failure before rollout",
+      "behavioral_evidence_included": false
+    }
+  ],
+  "hero_video": {
+    "path": "docs/assets/eggroll_autopatch/walking_wedge_gen85_hero.mp4",
+    "sha256": "7e11ae596b529af45d9a94e0813b5be0e7d3edfdc741d409a05ad9305cf83216",
+    "case_id": "confirmation-wedge-vx-0.40-001",
+    "selection_rule": "confirmation-bank source failure and adapted success at the highest tested command speed",
+    "source_rollout_duration_seconds": 0.68,
+    "adapted_rollout_duration_seconds": 5.02,
+    "presentation": "the source terminal-failure frame is held after its rollout ends while the adapted rollout continues"
+  },
+  "readme_animation": {
+    "path": "assets/walking-wedge-comparison.gif",
+    "sha256": "10157e9d7e9838eb2119491736b188f99f7871267d14a74439d2b06bf79caa31",
+    "source_video_sha256": "7e11ae596b529af45d9a94e0813b5be0e7d3edfdc741d409a05ad9305cf83216",
+    "frames_per_second": 15,
+    "width": 960
+  },
+  "zero_regression_audit": {
+    "audit_date": "2026-09-01",
+    "release_semantics": "profile-specific patches must retain every source success on the attested activation profile across two disjoint production-runtime banks; multi-profile patches must do so on every declared profile; unknown profiles retain the exact source bytes",
+    "result": "generation 85 passed two independent profile-specific wedge banks with zero lost source successes; production routing attestation remains",
+    "release_scope": {
+      "mode": "profile_specific",
+      "path": "docs/experiments/release_scopes/walking_wedge_gen85_profile_specific_v1.json",
+      "sha256": "4435a7837cedc7f480e961d2f43d5abc3800eeb5d8356aed1b1bc27a1dbcfd00",
+      "activation_profile_role": "shifted",
+      "activation_profile_sha256": "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+      "unknown_profile_action": "retain_source"
+    },
+    "confirmation_bank": {
+      "status": "executed; passed",
+      "file_sha256": "dfd523bc778d714eef36eec3d9ee64f430f1af3cf2910277aef466c3b0bd6955",
+      "base_seed": 20262023,
+      "cases": 32,
+      "seeds_overlap_first_bank": 0,
+      "source_terminal_successes": 23,
+      "adapted_terminal_successes": 32,
+      "lost_source_successes": 0,
+      "repaired_source_failures": 9,
+      "paired_manifest_sha256": "3a694e6b845c203789e5979882ec3132b98f6e6baac9f46728a72bc9e44f9d4a"
+    },
+    "combined_in_profile": {
+      "banks": 2,
+      "cases": 64,
+      "source_terminal_successes": 47,
+      "adapted_terminal_successes": 64,
+      "lost_source_successes": 0,
+      "repaired_source_failures": 17,
+      "per_command_source_successes": [12, 12, 14, 9],
+      "per_command_adapted_successes": [16, 16, 16, 16],
+      "accepted_source_adapted_runtime_traces": 128,
+      "behavioral_gate": "passed",
+      "non_regression_record": "docs/experiments/walking_wedge_gen85_two_bank_non_regression_v2.json",
+      "non_regression_record_sha256": "ffe2011d2c59a186abbcfaa6e128ffdb53cc7781be53e609ef98864162f26879"
+    },
+    "new_training_launched": false,
+    "candidates": {
+      "generation_50": {
+        "adapted_policy_sha256": "ddf2e9417c0e8acf13bf95ad5303ef338a58247c290f1ec75f7f1ccd5770a5f9",
+        "onnx_parity_max_abs_error": 0.00000035762786865234375,
+        "status": "rejected on first observed source-success regression",
+        "regression_case_id": "heldout-wedge-vx-0.36-001",
+        "source_case_manifest_sha256": "071113e61c177ebd4082a43418a770a6cd26d1fa2e7b7e5aa6a61b497f4e733a",
+        "adapted_case_manifest_sha256": "195b902ae49d37a5a46cd85f195e45fc732ec21d6f4079f6b3629efa11ec6143"
+      },
+      "generation_55": {
+        "adapted_policy_sha256": "e40c4697084993f1d6edfe5c3eac849de57d19e1bf7b9849a6d46eaf1b922948",
+        "onnx_parity_max_abs_error": 0.000000476837158203125,
+        "status": "rejected after complete paired bank",
+        "shifted_terminal_successes": 32,
+        "nominal_terminal_successes": 31,
+        "source_nominal_terminal_successes": 32,
+        "regression_case_id": "heldout-wedge-vx-0.36-004",
+        "paired_manifest_sha256": "6c40922f814860a34cc87f08719ff4e5ed0617444b0a6199f557770917ac1ea7",
+        "non_regression_report_sha256": "c54b54d20e576e854f73601e329c350481f343a4736dfb1fd584c0ca01d2d3d7"
+      },
+      "generation_75": {
+        "adapted_policy_sha256": "70f4d87b2fa1cd0ccca604c33fd373f9141d15057b551190ca51d075e3ef9a76",
+        "onnx_parity_max_abs_error": 0.00000035762786865234375,
+        "status": "rejected on first observed source-success regression",
+        "regression_case_id": "heldout-wedge-vx-0.36-004",
+        "source_case_manifest_sha256": "fa6cbf80b086813708d6f431dc786ceb2445c58e49cc42f9d001dcb39766145c",
+        "adapted_case_manifest_sha256": "e71d69b14e991da1792ab03e410111129395781709269814ae207822784f1cdf"
+      },
+      "generation_85": {
+        "adapted_policy_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+        "onnx_parity_max_abs_error": 0.000000476837158203125,
+        "status": "passed two independent profile-specific wedge banks; cross-profile original-foot diagnostic is not release-eligible",
+        "shifted_terminal_successes": 64,
+        "source_shifted_terminal_successes": 47,
+        "shifted_source_success_regressions": 0,
+        "shifted_source_failures_repaired": 17,
+        "nominal_terminal_successes": 31,
+        "source_nominal_terminal_successes": 32,
+        "regression_case_id": "heldout-wedge-vx-0.36-004",
+        "paired_manifest_sha256": "018a05616e1eb3581d5248852a17d9bc86018b4ca38381698de09a3a199fd714",
+        "confirmation_manifest_sha256": "3a694e6b845c203789e5979882ec3132b98f6e6baac9f46728a72bc9e44f9d4a"
+      }
+    },
+    "claim_scope": "Two seed-disjoint production-runtime wedge banks show 47/64 source success versus 64/64 DuckEgg success, with all 47 source successes retained and all 17 source failures repaired. This establishes zero observed in-profile regression on the sealed banks. Fail-closed production routing attestation remains required for the deployment-scoped release; original-foot 31/32 is a cross-profile diagnostic, not a claim of multi-profile eligibility."
+  },
+  "task_return_role": "diagnostic-only"
+}

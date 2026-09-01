@@ -1,0 +1,36 @@
+{
+  "archive": {
+    "branch": "archive/eggroll-standup-pre-posttrain-2026-08-30",
+    "bundle_sha256": "1f1c64eaeed30fe47333fe0e988407d9955a1ef2683a8c811cb83657c44dd096",
+    "source_commit": "5cafd566f88214dbbb9c2e5d6986ab784beed40c",
+    "tag": "eggroll-standup-pre-posttrain-2026-08-30"
+  },
+  "conclusion": {
+    "closed_loop_balance_learned": true,
+    "direct_full_network_formulation": "no-go",
+    "standup_recovery_learned": false
+  },
+  "final_runs": [
+    {
+      "job_id": "6a93ced045686a1580c17532",
+      "name": "mean-return control",
+      "repository": "richoakley/eggroll-v3j-g93-control-mean-g123",
+      "terminal_successes": 49,
+      "worlds": 64
+    },
+    {
+      "job_id": "6a93cee2984507d9db4ec98b",
+      "name": "standing-robustness treatment",
+      "repository": "richoakley/eggroll-v3j-g93-robustness-g123",
+      "terminal_successes": 49,
+      "worlds": 64
+    }
+  ],
+  "production_control": {
+    "filename": "alpha_stand.onnx",
+    "sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b",
+    "source_commit": "apirrone/microduck_runtime@5f3b314"
+  },
+  "record_version": 1,
+  "status": "complete"
+}

@@ -1,0 +1,25 @@
+[posttrain]
+task = "Mjlab-StandUp-Flat-MicroDuck"
+run_name = "alpha-stand-low-voltage-latency-v1"
+output_dir = "runs/eggroll-posttrain"
+device = "cuda:0"
+seed = 20260830
+
+# Search only the imported actor's 14x128 output matrix and 14D bias (1,806
+# parameters). Population 512 gives 256 antithetic directions per generation.
+population = 512
+generations = 100
+rank = 4
+sigma = 0.015
+learning_rate = 0.003
+noise_reuse = 1
+
+# Every generation uses a new balanced, common-random-number bank. Selection is
+# always on one fixed held-out bank; nominal behavior is a hard retention gate.
+train_episodes_per_pose = 1
+heldout_episodes_per_pose = 16
+nominal_episodes_per_pose = 8
+eval_every = 5
+save_every = 5
+nominal_retention_tolerance = 0.05
+success_hold_s = 1.0

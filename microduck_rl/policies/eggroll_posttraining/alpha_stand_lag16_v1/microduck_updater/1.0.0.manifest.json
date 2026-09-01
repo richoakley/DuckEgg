@@ -1,0 +1,13 @@
+{
+  "changelog": "EGGROLL policy alpha_stand_eggroll_lag16_v1.onnx (bd2bfbb22d7a)",
+  "channel": "model-stand",
+  "min_hw_rev": 0,
+  "model_api": 1,
+  "schema_version": 1,
+  "sha256": "6088764a15fd9c1394d40fe0d7dd78a2ca1abe8283da94489c2ec22666ce1e4e",
+  "sig_url": "model-stand-1.0.0.tar.zst.minisig",
+  "size": 745110,
+  "source_revision": "597a2670676c65b57da9264ed5c2f3feaf2c7fb7",
+  "url": "model-stand-1.0.0.tar.zst",
+  "version": "1.0.0"
+}

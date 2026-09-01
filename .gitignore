@@ -1,0 +1,49 @@
+# Local assistant and operator workspaces. Public source must not depend on them.
+/.codex/
+/.local/
+/.scratch/
+/evidence-private/
+
+# OS and editor state.
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Python environments, caches and experiment output at any depth.
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/*.py[cod]
+**/build/
+**/dist/
+**/*.egg-info/
+**/wandb/
+**/logs/
+**/runs/
+**/artifacts/
+**/*.pt
+**/*.npz
+
+# Rust build and release output at any depth.
+**/target/
+**/staged/
+**/verify/
+
+# Never commit signing or credential material.
+**/*.key
+**/*.pem
+**/secret*
+!**/*.pub
+
+# ONNX files are normally generated. Only the deliberately shipped policy locations
+# are public artifacts.
+**/*.onnx
+!policies/*.onnx
+!microduck/example_policies/*.onnx
+!microduck/duck-detect/models/*.onnx
+!microduck/pet-detect/models/*.onnx
+!microduck_rl/policies/eggroll_posttraining/**/*.onnx

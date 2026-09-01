@@ -1,0 +1,463 @@
+{
+  "adaptation": {
+    "configuration": {
+      "device": "cuda:0",
+      "eval_every": 5,
+      "generations": 100,
+      "heldout_episodes_per_pose": 16,
+      "learning_rate": 0.003,
+      "noise_reuse": 1,
+      "nominal_episodes_per_pose": 8,
+      "nominal_retention_tolerance": 0.05,
+      "output_dir": "runs/eggroll-posttrain",
+      "population": 512,
+      "rank": 4,
+      "run_name": "alpha-stand-low-voltage-latency-v1",
+      "save_every": 5,
+      "seed": 20260830,
+      "sigma": 0.015,
+      "success_hold_s": 1.0,
+      "task": "Mjlab-StandUp-Flat-MicroDuck",
+      "train_episodes_per_pose": 1
+    },
+    "deployment_profile": {
+      "actuator_lag_steps": 16,
+      "battery_voltage": 6.5,
+      "name": "calibration-6p5V-lag16",
+      "voltage_sag_gain": 0.2
+    },
+    "deployment_profile_sha256": "3b55ad4ff9c3d7a400ad9c94b2a102a7210be203c7db84a9a94ce3d15e3b5f81",
+    "frozen_scope": "normalizer and first three Gemm plus ELU layers",
+    "method": "EGGROLL output-layer post-training",
+    "modified_parameters": 1806,
+    "objective": {
+      "candidate_order": [
+        "terminal_success_count",
+        "terminal_hold_total",
+        "worst_terminal_progress",
+        "mean_terminal_progress",
+        "transient_recovery_count",
+        "stable_hold_total",
+        "standing_time_total",
+        "worst_scenario_progress",
+        "mean_scenario_progress",
+        "negative_mean_time_to_recovery",
+        "post_success_quality"
+      ],
+      "name": "posttrain_standup_terminal_success_lexicographic_v1",
+      "progress": {
+        "episode": "0.50 * best_window + 0.25 * terminal + 0.25 * positive_gain",
+        "formula": "height_gaussian * upright_gaussian * leg_pose_gaussian * (0.1 + 0.9 * foot_support)",
+        "window_s": 0.5
+      },
+      "registered_task_return": "diagnostic_only",
+      "selection_gate": "nominal_terminal_success_retention",
+      "success": {
+        "height_tolerance_m": 0.015,
+        "max_leg_rms_error_rad": 0.4,
+        "max_tilt_deg": 20.0,
+        "min_foot_support": 0.5,
+        "stable_hold_s": 1.0,
+        "target_height_m": 0.115
+      },
+      "success_reporting": "terminal_success_only"
+    },
+    "trainable_scope": "final Gemm weight and bias only; 1,806 parameters"
+  },
+  "adapted_policy": {
+    "activation": "elu",
+    "filename": "alpha_stand_eggroll_lag16_v1.onnx",
+    "independent_maximum_runtime_error": 9.5367431640625e-07,
+    "input_name": "obs",
+    "output_name": "actions",
+    "path": "alpha_stand_eggroll_lag16_v1.onnx",
+    "sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+    "source_sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+    "tensor_sha256": {
+      "frozen": [
+        "53074ce10780fe7363dcb49b123443d899e673038986cd6770ba380154df6ab6",
+        "243430610fa771c2b0ef7fdc78a45a1923730648593d64eb5637bd46e28a0561",
+        "4aeac667c2d427b5f465c11480278b4aa24e66d3ce5d2262d4aaeae8f940d711",
+        "b1df0a24b23ba686a4fd6fa5977954e2c463ade46d6ea7cd5c64898322fcd3aa",
+        "1ed1353860e44c25a3d49f48f26d83a82246917cdd81aefb00bbbc711f9a4953",
+        "6998ebb5d27dcb3600f4aea2249352e68c159ee66a2e9ed537d40f60a9bde1bc",
+        "ccb2a82ff31420b063a0c2c7e6cc339857bafd79048f76e2e74e53d6d0827fbf",
+        "2841e40e58d21a42bc76bf15642312295a837a035f51ace07bc29a10817838a5"
+      ],
+      "output_bias": "db4246a9a5d136f4bd6665270d8cd546f7fb1ed48bec5f09a057fd3814f356b9",
+      "output_weight": "72b5bd6c5f0750d607aa7e240bd38563d13fb28fda4592edcf47772c4cec6e05"
+    },
+    "trainable_parameters": 1806,
+    "trainable_scope": "output-layer",
+    "widths": [
+      61,
+      512,
+      256,
+      128,
+      14
+    ]
+  },
+  "base_policy": {
+    "activation": "elu",
+    "bundled": false,
+    "filename": "alpha_stand.onnx",
+    "input_name": "obs",
+    "output_name": "actions",
+    "sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b",
+    "source_sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b",
+    "tensor_sha256": {
+      "frozen": [
+        "53074ce10780fe7363dcb49b123443d899e673038986cd6770ba380154df6ab6",
+        "243430610fa771c2b0ef7fdc78a45a1923730648593d64eb5637bd46e28a0561",
+        "4aeac667c2d427b5f465c11480278b4aa24e66d3ce5d2262d4aaeae8f940d711",
+        "b1df0a24b23ba686a4fd6fa5977954e2c463ade46d6ea7cd5c64898322fcd3aa",
+        "1ed1353860e44c25a3d49f48f26d83a82246917cdd81aefb00bbbc711f9a4953",
+        "6998ebb5d27dcb3600f4aea2249352e68c159ee66a2e9ed537d40f60a9bde1bc",
+        "ccb2a82ff31420b063a0c2c7e6cc339857bafd79048f76e2e74e53d6d0827fbf",
+        "2841e40e58d21a42bc76bf15642312295a837a035f51ace07bc29a10817838a5"
+      ],
+      "output_bias": "b575cadb689facfdd0d8e972049145976d337e13b48ddb7a77888b2a1c443653",
+      "output_weight": "9f1fe6c536eb3bdf26d4fb946b4fdc3b455e3342af57a4f25429343133bfda3e"
+    },
+    "trainable_parameters": 1806,
+    "trainable_scope": "output-layer",
+    "widths": [
+      61,
+      512,
+      256,
+      128,
+      14
+    ]
+  },
+  "derivative": {
+    "generation": 100,
+    "id": "alpha-stand-lag16-v1",
+    "kind": "deployment-condition-adapter",
+    "runtime_slot": "stand"
+  },
+  "episode_banks": {
+    "checkpoint_selection": {
+      "seed_rule": "trainer_seed + 1000003",
+      "sha256": "073b419e24eeaeac09bda6b77b3ec3849e63a8ede96c41dd2b67949f3d3e99aa",
+      "worlds": 64
+    },
+    "final_nominal": {
+      "sha256": "e0621068624fb9bf0442f561cb60d68ef3dc370f42be771f06cbfb70f267a45e",
+      "worlds": 32
+    },
+    "final_shifted": {
+      "sha256": "47ee756614e6dafa8a65da6e1aabc71a97b9373b9e62b0f26bd34bd9d7f2ff7f",
+      "worlds": 32
+    },
+    "nominal_retention": {
+      "seed_rule": "trainer_seed + 2000003",
+      "sha256": "8e4832ac4e592c1584b223a96fbab0e28b0f5b99555f030a2f8f7556fadefb03",
+      "worlds": 32
+    },
+    "optimization": {
+      "count": 100,
+      "hashes": [
+        "e03980bd4f286efc6536a1721d3db7ba6a75ff1a2f037eedd0e6c2b26bc88535",
+        "d294da0c1c41b27592e6c012e9dd12211bd114c41a25bf86adcef3c958750019",
+        "86a3e123fc60398de0aceae387feae1a9d7b2bd2031314e97cab6a0aa1a5f619",
+        "4659602d2b30a9ed99ebf18b40bd814102f0306ee72f7dd5745ddb9dc1f6ca99",
+        "e1015c44d18491614a0e68a0b6f899227573bdf61cbd3930d1c3b5cbda58c9f0",
+        "10e0af3569e1ec8554fa42b709b95cfca7e33c87e94004f15cf8b3668e55cf18",
+        "6f2c5b85f5a8ce71ccf1781dd0024da132d8d157d09740da510a4981a066cc61",
+        "4a877b97d53fb7ed9fe5925ce7f3eacb892e727a546c3c3ff0da9cc47e15ea99",
+        "cda4f5816ac5775c93d84b81168c72e80955b76ec6a3ade8dbf86188f67960fa",
+        "4ef06741515add45af8d396b10145dbae95c4afdc259c5826d0e8416b6bfc225",
+        "2b2b0dd5b3f0b684d2b4a86e37ad6beda4ac355d41c3f3e47656d81a66295184",
+        "23903393cb42d04c283d8a207b6056cadb2ea8735ef8ece546739f5667ec0282",
+        "a81a44d2abcbbbf9d64a8ad74da843718e9b657ff7f43c475be002a0bfdf9627",
+        "a0597be0eebd237664e201fcc56a30a63427ec0b91c529a10b48776ffb1a2d85",
+        "492285060c3eabcea3415134118887b6a3fb4987c28352cd056c3ad3e8f73c46",
+        "54b7e939baa8d7d9a1e4c41d7db83462c27b57777d579159b96bccf365a33f65",
+        "af19a64d2d0ff5d45ebc902a16698b5b0e7f70d226c57a0bed408412c9aafdb8",
+        "4cee0f219bde3dbed83275a816b1aedab8591fb5cf3610d07b6555f12be39edf",
+        "e3a19c41d300c5a786e9ac22bcab20951a5950f32e0bdb8484dd1cd6df5abdfc",
+        "83c9a791bccd939b85e03823737a5d794a6fc936c4f7cee874ffe06b36cc1dec",
+        "261c0a74adbc7e021b21a02308d0148bb704d6dc0340aea8dfa5f1dd562efa2b",
+        "596d5c5c693d5df54bb3f5ce156fd771e9b5b1708283cd75e2e417828e4c6203",
+        "66129c672821ad8d72a712e3d3bf9082bddb13ab2a06b6341d4c3e3489271436",
+        "1a7f7ce50f02f3f3715a2bffd8c2f0f223fe3f51442361e5a70dce6110421618",
+        "2b80d89784adb160c303c9e66c7dd6a5ab0b8b5b54fe95966743f89398f0492d",
+        "8d23f1881d485e4129eb3b680c8825adb8c2e344dd43512c797def771aa1a551",
+        "dae4c6816665a1f40e7e63cee35c4aa986a1777de3e32d62591aa5061fd260e6",
+        "373aa4e70f8923a6de24956e00a917f04956e99b5a15c39de238b7058ecdf24d",
+        "732b2f4aca6cea7e1b4693d4f54378fbeb43ccc60fbe7744424874576e23d9f9",
+        "65cd9a879a17465a6689bf0c10ded8646829ce1a0e7f568ca8a861d34f31b70e",
+        "56cc2eb3aaf2cbcd9a4b3eb7bd169faf114917b01c0b530ceccb8bef68230a29",
+        "f6e4a60b99f0db81632bc5a858d65daf67bafb9fa9a3d188df94f8b04b5f0763",
+        "c2c2f3f53b30be5090fa189a5b764ac5bbeb7f26e6338658dfa57e274fa3423e",
+        "653ba8ddb4178a9266fa267df35e256c09bc6dee51f07df50522dbb526d6a7e8",
+        "380d9cff33dad5d023c7549c19cd85a54c908e639842cd31ba77c42eafbc732b",
+        "b7af4090ef38d32272bf6bfe902ebfb0f33c3e8457c6fcb07bd08bef105f2526",
+        "9731474dbac986b18fcd0bd9a05d658e50e8319e27da08bd425deddf5da97599",
+        "9f4136b8dff935bb8b44f84415a992456440434224f3ace1f6673990708ae2c6",
+        "e4e7f2b5a486c54717834a2b638df88f5c9b7ede08177668250e9eba6a6d75ad",
+        "5916e774792cd65a5a84f52e2fe06267f5802839694c4e1a1ed42ae5c3bfeecb",
+        "6ca4d3270702b45e61269398c5f0f052df59b3c246830a3a98778e7a72bf1c37",
+        "f6b814f18b7a2035125403044a937396281b1c86af4561f8e5695fa3db5d37c6",
+        "89a83ebb55cfa4695367111b3ad90c34dcefa5a981a54d69190b2399d8595cf1",
+        "76a34837adcd9bf5b1c5e6656f116b0639a0ee33c664c3933b78ab45cfca0d1f",
+        "6d7dcc27c8854b6ce68322b220f0be1cff828d9dcb907e3e3d3c7bc3953ad152",
+        "b5e98a2161e8feb2db737aa77cd74f20901c238146a011381b36e633333d35c8",
+        "226627cd51c7b5577370973439fa5a4fd6f55311107636d8a02e4070acd5e7d1",
+        "19899213d4672eb01eaeb150fce56c64d4db5a1e528ce8fdc406b8356492c6e9",
+        "8eead99faf62abd4a28a16b68c8545351fa58c4c6638f428407205e9f2d86a07",
+        "9a558d3fe01bc34f1a6c68adb9abfecabed29b0d15debded848aacdd3ceeb332",
+        "3dccba8e613b61e7a8debdd1dd335ec67303288490c393eeed2c34ff0db1c701",
+        "f7aa2a33dec33608dc59791d49927b21e5003774de39a0cdb61f7ba28f500aeb",
+        "c59152b9aa9015b102202b2fd5a8d0c9f924169adb81abb5c6a6405f9c2e17c3",
+        "ecced1b02a65bb88d41c5940e0314fda4e8010d96c82090a0234118ca1169862",
+        "ebddbdaf249b40e55e693975dd70bccb8808f697a77ddb8a0e27f5a62b588079",
+        "4004b22fc3d7d7ba36e316d5ec420b7495ed54640292b6243a7396763f6456b9",
+        "f92238956ad18b99a2c1476081d5cc1b4785ecf7e463b87deccd39659125933f",
+        "4403da8c78c250e131bf00bfefe4422d0d13d79ff82f2b942c7cd77b25093c4b",
+        "e7091086b90f99572b6d01f679e7a725ce05a4278d52ec5bc849ff750d03d724",
+        "96261859d24b9dde12b26f7e2be3a279beb914c332ba48906f5bfb1e0364a915",
+        "b2f02be4bf88bf18c75e8ccdca67bf53ee00dcb72f7a4e618aee2626e12dd103",
+        "4b0056aadcb43cc86f71be8e2d0a5ad0fd0c8b5e35e21720be357926dae30a61",
+        "a6998b7597ed3b35140422ba735e1217e64a6b247cb3c463db4f647c8e16f36e",
+        "0215b53ac7befc3a2b6333721d5ed133884ada20b62638aa98749c6a4401f8f6",
+        "4ff25d43d9cf26b26e4ce9de8334c0181301a4db8adfbc775cfb149db4461cef",
+        "0f806f7bd7f47a11321a6fccedbaec49d1494d66bb9a5f97590d3a4808a759a2",
+        "6cd32612a4986f5cc4ccfbee940f113234ccee7b3e722d740f22ceab7fb07e58",
+        "b7c6c911d77ddb63e22940ebedf39630630d2eb29cbf8979a7d9f86d8b76260a",
+        "4804266fffa6b37b4bf372b36ede5f37fbb5b09ea4927d714479c902a1a98550",
+        "248535e397317ba1539504405bc3c8b7d41c17443a9a8050bf00c4867df39672",
+        "59963db4f9cf059ed0cec252df6bcc03a0329728e1a528ca6ba8c59ca3def6d4",
+        "d5a8d4c58d882769ea24c4cbc4e2880b9d4f06f2329584330bb776881c427181",
+        "4605316e1aba81b77e852c5aca6e3cf688b2e1c374bd6ac79fa1963600b28960",
+        "3bc28e72da50296eb88649d1bd24041dd7ed380566b6596fca9d59e2b5a691f3",
+        "b60b9f1ac83c12b777df0126a309484dd2e4c6fd06f1a0bccc0ffa1626473f7e",
+        "95aaacf01b0d9e6dec28f32d778084082e9792a2cd0e5192666207eb0de6d3fb",
+        "b345dc00d3235396640e3c268b9f828f6182136fa578267cf62bfc2b86e4ae80",
+        "973b76055dd41b980fd3d54d8bfba950ef45a5b777053362168c142f1332e08f",
+        "a79399f49f76a0e41052b596095a147c7f9eb70a4a6167bb4da1e257144b53fa",
+        "20397efd2d109c8b99420523a0548534462f80f5ffb49cf07d50a062ca298755",
+        "089a4d4c2b199b5b7bb3e3cc9b1675472166275fa922d6b9557e6402b30f6257",
+        "fc06ea6c7784870bfd4531932551079e6b1e2d6fe31bb5f424f794c8f933df76",
+        "cca0038c2f0a95b33bcc90d62b24b43a9a25ff821e85a706e0355bfbf515508a",
+        "0d2dbad9fcc7ef80b7c5837d4cc0bd02ecb96a9c44ff293312ef60a06a4ccfb9",
+        "a85e20e6fbb3a101dec125c250c0af8bbc1b3ff8d2f5be40bad5fbe27eb80f8d",
+        "cd8901c6d081ab463ba459ab94587a6421e83a3e7036ba42eed2417149e2667d",
+        "162bfd7e33a78fc246c140b94e3e756fdd8fcf128bda6510faf81607e34bedc2",
+        "de1a9ee23e99066bf54ac068fb6dc673f16d21baa986fd7ea2fabcbcbd768df9",
+        "450a7e55d6c8b786dd45e15cbed6299d9057e7486e97919d364501cd389a603a",
+        "9b6f51079235f37f9c5d330c6cdbaca68a1ebd59ebe564517378e702819e26c6",
+        "22ed0f4439e0e91f8f1964e63427224482f0d0619adf2e8bd7de0c7bf3e98cf2",
+        "4fad8b417a446cbe2f13218ba7bd8a6bff65a99c5d06d67a4a3921c9ab0683d5",
+        "02e9aae7a37aff5fb1df62d189779b8926f3fe4d15927fd392850b6bbd174749",
+        "16e1df35ff13538c038585d75a208ac2bd6dfbedd518505fb88f53a8c786d469",
+        "3fe230aa2c239e9a225405a98d476b6f43731991f2888c2be7a992f7bd1654c5",
+        "30f763d94d639a8cf4a1180226e57d2a68e3e0fc7e42212a9e3b922162b2ccd5",
+        "67ec9269d00b283755f43225f97f4f4accb2c07fc3ba4ce3d41bc7ec46f5992b",
+        "a1d81b634072f82da7ae0aac3127180ad775664ea4e0f20abb215257f72c7f1e",
+        "2ed8a75ce2101e88393b93923783ec15189e1acd21b503ac7d216b2724820e51",
+        "dfa26b5c5388ce2fdf1e1331ca237883c570a1df9b9540826b7a4204e9de2fbd"
+      ],
+      "ordered_hashes_sha256": "c9eef507b8db199df74cc09e0a86bca1ea69823dec8884db9160d60c0000db8d",
+      "seed_rule": "trainer_seed + generation_index * 10007",
+      "worlds_per_bank": 4
+    },
+    "pairwise_disjoint": true
+  },
+  "evaluation": {
+    "adapted_nominal": {
+      "bank_sha256": "e0621068624fb9bf0442f561cb60d68ef3dc370f42be771f06cbfb70f267a45e",
+      "metrics": {
+        "mean_final_trunk_height_m": 0.10976801184006035,
+        "mean_final_upright_cosine": 0.9959139451384544,
+        "mean_max_trunk_height_m": 0.11345848790369928,
+        "mean_stable_hold_s": 4.984999909996986,
+        "mean_task_return": 39.2736434340477,
+        "mean_time_upright_s": 5.492499828338623
+      },
+      "path": "evidence/adapted_nominal.summary.json",
+      "per_pose_terminal_successes": {
+        "face-down": 8,
+        "face-up": 8,
+        "sitting": 8,
+        "standing": 8
+      },
+      "policy_sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+      "profile": {
+        "actuator_lag_steps": 4,
+        "battery_voltage": 7.35,
+        "name": "nominal-fixed-median-v1",
+        "voltage_sag_gain": 0.1
+      },
+      "profile_sha256": "2b3128025393155590b42fa7a85903d001ff2faba5748c19e95856ef0869b49f",
+      "sha256": "b7ba641b75f60e40e3c5a7d3efbf9381361fd8418236cf25ece20bc069fc74d3",
+      "terminal_successes": 32,
+      "worlds": 32
+    },
+    "adapted_shifted": {
+      "bank_sha256": "47ee756614e6dafa8a65da6e1aabc71a97b9373b9e62b0f26bd34bd9d7f2ff7f",
+      "metrics": {
+        "mean_final_trunk_height_m": 0.10817642998881638,
+        "mean_final_upright_cosine": 0.9943541698157787,
+        "mean_max_trunk_height_m": 0.11272171977907419,
+        "mean_stable_hold_s": 4.3687499314546585,
+        "mean_task_return": 33.666469752788544,
+        "mean_time_upright_s": 5.224999941885471
+      },
+      "path": "evidence/adapted_shifted.summary.json",
+      "per_pose_terminal_successes": {
+        "face-down": 8,
+        "face-up": 8,
+        "sitting": 8,
+        "standing": 8
+      },
+      "policy_sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+      "profile": {
+        "actuator_lag_steps": 16,
+        "battery_voltage": 6.5,
+        "name": "calibration-6p5V-lag16",
+        "voltage_sag_gain": 0.2
+      },
+      "profile_sha256": "3b55ad4ff9c3d7a400ad9c94b2a102a7210be203c7db84a9a94ce3d15e3b5f81",
+      "sha256": "c1f4f9df91db6c1d1674931d01a8e2a884c103d8daa548f12e0517781ecc6605",
+      "terminal_successes": 32,
+      "worlds": 32
+    },
+    "source_nominal": {
+      "bank_sha256": "e0621068624fb9bf0442f561cb60d68ef3dc370f42be771f06cbfb70f267a45e",
+      "metrics": {
+        "mean_final_trunk_height_m": 0.11511412658728659,
+        "mean_final_upright_cosine": 0.9999369736760855,
+        "mean_max_trunk_height_m": 0.1164988602977246,
+        "mean_stable_hold_s": 5.724374905228615,
+        "mean_task_return": 65.23965620994568,
+        "mean_time_upright_s": 5.796249955892563
+      },
+      "path": "evidence/source_nominal.summary.json",
+      "per_pose_terminal_successes": {
+        "face-down": 8,
+        "face-up": 8,
+        "sitting": 8,
+        "standing": 8
+      },
+      "policy_sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b",
+      "profile": {
+        "actuator_lag_steps": 4,
+        "battery_voltage": 7.35,
+        "name": "nominal-fixed-median-v1",
+        "voltage_sag_gain": 0.1
+      },
+      "profile_sha256": "2b3128025393155590b42fa7a85903d001ff2faba5748c19e95856ef0869b49f",
+      "sha256": "9820e6b4205b706904f8f7a50b890f854b1a08b7d70a8bb38c62912de560ce56",
+      "terminal_successes": 32,
+      "worlds": 32
+    },
+    "source_shifted": {
+      "bank_sha256": "47ee756614e6dafa8a65da6e1aabc71a97b9373b9e62b0f26bd34bd9d7f2ff7f",
+      "metrics": {
+        "mean_final_trunk_height_m": 0.09961161471437663,
+        "mean_final_upright_cosine": 0.8480943776667118,
+        "mean_max_trunk_height_m": 0.12106403894722462,
+        "mean_stable_hold_s": 2.556249932385981,
+        "mean_task_return": 35.94236421585083,
+        "mean_time_upright_s": 3.6024999171495438
+      },
+      "path": "evidence/source_shifted.summary.json",
+      "per_pose_terminal_successes": {
+        "face-down": 5,
+        "face-up": 7,
+        "sitting": 2,
+        "standing": 3
+      },
+      "policy_sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b",
+      "profile": {
+        "actuator_lag_steps": 16,
+        "battery_voltage": 6.5,
+        "name": "calibration-6p5V-lag16",
+        "voltage_sag_gain": 0.2
+      },
+      "profile_sha256": "3b55ad4ff9c3d7a400ad9c94b2a102a7210be203c7db84a9a94ce3d15e3b5f81",
+      "sha256": "093c5f7c69d6a205c57516f65b65fb90acbbebbad1c910aedbab16994c960e70",
+      "terminal_successes": 17,
+      "worlds": 32
+    }
+  },
+  "limitations": [
+    "Simulation evidence only; no physical MicroDuck deployment is claimed.",
+    "Nominal terminal capability was retained, not nominal task return or style.",
+    "The result is specific to the declared lag/voltage/sag profile."
+  ],
+  "provenance": {
+    "checkpoint_path": "run/alpha-stand-low-voltage-latency-v1/checkpoint_000100.pkl",
+    "checkpoint_repository": "richoakley/eggroll-posttrain-alpha-20260830-v1",
+    "checkpoint_sha256": "ceaf5ef1cb5becff991aebcd298541ba34f6d76d0bef4f198f363cae81c8b4cc",
+    "export_verification_sha256": "67c58d8b789b65a6823935221057e3b49285de42dc01bbe11c95442d91349026",
+    "source_commit": "597a2670676c65b57da9264ed5c2f3feaf2c7fb7"
+  },
+  "release_decision": {
+    "nominal_retention": {
+      "adapted_successes": 32,
+      "minimum_rate": 0.95,
+      "passed": true,
+      "source_successes": 32,
+      "tolerance": 0.05,
+      "worlds": 32
+    },
+    "passed": true,
+    "primary_gate": "terminal_stable_success",
+    "shifted": {
+      "adapted_per_pose": {
+        "face-down": 8,
+        "face-up": 8,
+        "sitting": 8,
+        "standing": 8
+      },
+      "adapted_successes": 32,
+      "source_per_pose": {
+        "face-down": 5,
+        "face-up": 7,
+        "sitting": 2,
+        "standing": 3
+      },
+      "source_successes": 17,
+      "worlds": 32
+    },
+    "status": "released",
+    "task_return_role": "diagnostic_only",
+    "weak_pose_improved": true
+  },
+  "rollback": {
+    "mechanism": "robotctl update rollback model-stand",
+    "target_filename": "alpha_stand.onnx",
+    "target_runtime_slot": "stand",
+    "target_sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b"
+  },
+  "runtime_contract": {
+    "action": {
+      "dtype": "float32",
+      "shape": [
+        1,
+        14
+      ],
+      "standing_action_scale": 1.0
+    },
+    "graph": "Sub, Div, (Gemm, ELU) x3, Gemm; IR 8; opset 18",
+    "model_api": 1,
+    "observation": {
+      "dtype": "float32",
+      "normalizer": "baked into ONNX and frozen",
+      "shape": [
+        1,
+        61
+      ]
+    },
+    "production_loader_verification": {
+      "loader": "duck_control::policy::Policy::load",
+      "passed": true,
+      "path": "runtime_verification.json",
+      "sha256": "67aed8cdfa12d01a9e11354eba925f65c7514f987e8b060913fc25dcdb4a370c"
+    }
+  },
+  "schema": "mjlab-microduck-eggroll-policy-derivative",
+  "schema_version": 1
+}

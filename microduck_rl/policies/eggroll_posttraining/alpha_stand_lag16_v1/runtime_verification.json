@@ -1,0 +1,26 @@
+{
+  "action_count": 14,
+  "format": "microduck-production-policy-loader-verification-v1",
+  "model_api": 1,
+  "observation_width": 61,
+  "onnx_runtime": {
+    "filename": "libonnxruntime.dylib",
+    "sha256": "872533f130f1839a5bc01788ddb4f75c83a189763441ba1178788ed965449289"
+  },
+  "passed": true,
+  "policy_filename": "alpha_stand_eggroll_lag16_v1.onnx",
+  "policy_sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+  "production_path": "duck_control::policy::Policy::load",
+  "runtime_source": {
+    "cargo_lock_sha256": "72b4a495db7445e9fdd97c85a9105a8d48fe81278815cc4f4b7765aa28d81bad",
+    "dirty": null,
+    "observation_builder_sha256": "e62270d8a10a61ed27df8c76aa99afee9d8d0aad6ebd78d43004402fea6ae0e1",
+    "policy_loader_sha256": "3662ef53c10eee066fa2a44c5ecf86a38d7ac73697a22aa585d44596972ba682",
+    "probe_sha256": "821799cf99e6d522379dda1774d565391acf9044081d237df54bafba24a4910f",
+    "revision": null,
+    "snapshot_without_git_metadata": true
+  },
+  "stdout": "production-policy-load=passed path=/Users/richardoakley/Documents/Development/eggroll-duck/microduck_rl/policies/eggroll_posttraining/alpha_stand_lag16_v1/alpha_stand_eggroll_lag16_v1.onnx observation_width=61 action_count=14",
+  "verified_at": "2026-08-30T21:31:52.511558+00:00",
+  "warmup_inference": true
+}

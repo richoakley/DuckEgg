@@ -1,0 +1,13 @@
+{
+  "changelog": "Production rollback policy alpha_stand.onnx (1569268713e4)",
+  "channel": "model-stand",
+  "min_hw_rev": 0,
+  "model_api": 1,
+  "schema_version": 1,
+  "sha256": "4bc59bd270b4619260fefb3fb193c246b701c676819da0443d0c1768984c5048",
+  "sig_url": "model-stand-0.9.0.tar.zst.minisig",
+  "size": 737421,
+  "source_revision": "production-source-1569268713e4",
+  "url": "model-stand-0.9.0.tar.zst",
+  "version": "0.9.0"
+}

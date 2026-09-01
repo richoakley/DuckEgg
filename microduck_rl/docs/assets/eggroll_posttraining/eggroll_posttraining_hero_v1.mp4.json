@@ -1,0 +1,88 @@
+{
+  "duration_s": 35.1,
+  "format": "eggroll-posttraining-hero-v1",
+  "fps": 50,
+  "frames": 1755,
+  "full_bank_results": {
+    "nominal_retention": {
+      "adapted_successes": 32,
+      "minimum_rate": 0.95,
+      "passed": true,
+      "source_successes": 32,
+      "tolerance": 0.05,
+      "worlds": 32
+    },
+    "passed": true,
+    "primary_gate": "terminal_stable_success",
+    "shifted": {
+      "adapted_per_pose": {
+        "face-down": 8,
+        "face-up": 8,
+        "sitting": 8,
+        "standing": 8
+      },
+      "adapted_successes": 32,
+      "source_per_pose": {
+        "face-down": 5,
+        "face-up": 7,
+        "sitting": 2,
+        "standing": 3
+      },
+      "source_successes": 17,
+      "worlds": 32
+    },
+    "status": "released",
+    "task_return_role": "diagnostic_only",
+    "weak_pose_improved": true
+  },
+  "manifest_sha256": "f3ba766581d0733a92514e1a4a3ac665dd9b91939f93ab825e979ba16059808d",
+  "output_sha256": "1a4192429058075396e4eb209a26ba7c306663f109658ff3dcea6662aaba29d6",
+  "selection_policy": "first paired source-failure/adapted-success per shifted pose; first paired nominal face-down success",
+  "selections": [
+    {
+      "adapted_video_sha256": "69f97cbec7a0d39f10383ccfc2c35754a9017b89b576af0275c873889857a107",
+      "episode_index": 0,
+      "pose": "standing",
+      "profile": "shifted",
+      "scenario_id": "calibration-6p5V-lag16-standing-000",
+      "selection_rule": "lowest-index source failure with adapted terminal success",
+      "source_video_sha256": "71974b8340e77f3a2bbf101f264a35fca8c2c0dc9f44bf08df76aec1b5a2ddb8"
+    },
+    {
+      "adapted_video_sha256": "aa9bc8293083461868fdc7a096686de540a16c6d242db7729a2d303a5c7212ba",
+      "episode_index": 8,
+      "pose": "sitting",
+      "profile": "shifted",
+      "scenario_id": "calibration-6p5V-lag16-sitting-000",
+      "selection_rule": "lowest-index source failure with adapted terminal success",
+      "source_video_sha256": "a5ddeb92d16ddfa1bab4837881c3d5a25efd8873786913338bb3670632e2efc7"
+    },
+    {
+      "adapted_video_sha256": "05345c24c335600c3f1d396cc270ddecb00842ae1a238e2bbf3b732fdf8ad2b9",
+      "episode_index": 19,
+      "pose": "face-down",
+      "profile": "shifted",
+      "scenario_id": "calibration-6p5V-lag16-face-down-003",
+      "selection_rule": "lowest-index source failure with adapted terminal success",
+      "source_video_sha256": "4dfeec487db5dc18fbb32a7ebd0770ec72ea90b84f1daaa843650dedc3bfc76a"
+    },
+    {
+      "adapted_video_sha256": "b88bcad27b09e37118972b23cb4964d4390d6fbe5225b6e81536394708e0f950",
+      "episode_index": 31,
+      "pose": "face-up",
+      "profile": "shifted",
+      "scenario_id": "calibration-6p5V-lag16-face-up-007",
+      "selection_rule": "lowest-index source failure with adapted terminal success",
+      "source_video_sha256": "52c1db1e21b0d3136e60bc7c655f9eb642582b778185a3d364353da40cc06f2d"
+    },
+    {
+      "adapted_video_sha256": "dce0f772a36e358e7ba031f137d8e7d785276106de3e2f96398547bd2758b524",
+      "episode_index": 16,
+      "pose": "face-down",
+      "profile": "nominal",
+      "scenario_id": "nominal-fixed-median-v1-face-down-000",
+      "selection_rule": "lowest-index paired nominal face-down success",
+      "source_video_sha256": "369bd04e4a835e3231c50612eefb9c908a3ca76987a986d94c985189907e3706"
+    }
+  ]
+}

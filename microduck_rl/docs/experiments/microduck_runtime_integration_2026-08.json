@@ -1,0 +1,35 @@
+{
+  "captured_at": "2026-08-30",
+  "git_metadata_present": false,
+  "purpose": "Exact actual-MicroDuck source snapshot used for EGGROLL loader, model packaging, identity, selection, and rollback integration",
+  "runtime_root": "../microduck",
+  "source_files": {
+    ".github/workflows/_build-release.yml": "1fe710d14d9cd53dcfb3f4dd2161fd2cd1be0c728be9253ff792e32dad15412c",
+    ".github/workflows/dev.yml": "3188f21daf0bad88b5ee6eaeb566fd2d807459ad18d4d3d824b78ed86d4bd69f",
+    "Cargo.lock": "72b4a495db7445e9fdd97c85a9105a8d48fe81278815cc4f4b7765aa28d81bad",
+    "deploy/robotd.toml": "d57b3abdc4c619a88b5346028f36f41dd3f954828e0af0ea9e67628552d4399a",
+    "docs/robot/eggroll-policy.md": "884a5cb02af6cb0ec29e536455ad9698fd44cf0325f16a3aeb0c6631db181663",
+    "duck-control/examples/policy_probe.rs": "821799cf99e6d522379dda1774d565391acf9044081d237df54bafba24a4910f",
+    "robotd/Cargo.toml": "e3024dbaa94177ab35acf60a1d18cb1542451d2aa218385754f24a676199ca36",
+    "robotd/src/chorale.rs": "17cd966f9dbf074226b946bfd82a20da40abc005948a74ce03758434def5e76d",
+    "robotd/src/main.rs": "d1b514adec14ae31cfd9c7deb8175271e7a5f983aebbe49ef5c6a69ba717f05f",
+    "scripts/dev-push.sh": "004dd1c25f86d0c14232ada93d7658159b556a45fb7a72596c05eabf178185ba",
+    "updater/updater.example.toml": "7d456cf2a37e63ba0dcb6c2a26ae47b15a14fa407c55b18e5387368c3821e228",
+    "xtask/src/main.rs": "308204ceca40750c1c8e35c4e955d671ee9ea3933c01c773bbda8d1d405c4a08"
+  },
+  "validated_contract": {
+    "action_count": 14,
+    "adapted_policy_sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+    "loader": "duck_control::policy::Policy::load",
+    "model_api": 1,
+    "observation_width": 61,
+    "source_policy_sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b"
+  },
+  "validation": {
+    "cargo_clippy": "passed for xtask, robotd, and duck-control with -D warnings",
+    "duck_control_tests": "60 passed",
+    "production_loader_probes": "source and adapted passed with warm-up inference",
+    "robotd_policy_identity_test": "passed",
+    "xtask_tests": "44 passed across unit, artifact, rescue, and sideload targets"
+  }
+}

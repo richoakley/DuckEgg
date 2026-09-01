@@ -1,0 +1,158 @@
+{
+  "adapted_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+  "artifact_id": "alpha-walking",
+  "claim_scope": "zero observed regressions under terminal-success semantics on the declared deployment profiles across the sealed paired banks; not a universal guarantee",
+  "evidence": [
+    {
+      "path": "/private/tmp/eggroll-walking-wedge-paired-evidence-v1/manifest.json",
+      "reports": [
+        {
+          "adapted_successes": 32,
+          "bank_sha256": "ba760ae8dcbb6c0b5827ab8c38bcbe6c4f4a5b41bc85864c0447af24f55eff01",
+          "claim_scope": "zero observed regressions under the capability's terminal-success semantics on this sealed paired bank",
+          "improvement_case_ids": [
+            "heldout-wedge-vx-0.28-000",
+            "heldout-wedge-vx-0.28-003",
+            "heldout-wedge-vx-0.28-005",
+            "heldout-wedge-vx-0.28-007",
+            "heldout-wedge-vx-0.32-004",
+            "heldout-wedge-vx-0.40-002",
+            "heldout-wedge-vx-0.40-006",
+            "heldout-wedge-vx-0.40-007"
+          ],
+          "paired_cases": 32,
+          "profile_role": "shifted",
+          "profile_sha256": "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+          "regression_case_ids": [],
+          "seeds": [
+            1897344956,
+            1098324968,
+            1249284430,
+            1913558822,
+            1199745407,
+            1617366885,
+            1187887485,
+            1429795105,
+            1690640953,
+            2090643632,
+            1518385659,
+            1255387246,
+            496034040,
+            1283368290,
+            275411616,
+            1479148999,
+            1643430830,
+            1796814999,
+            238603769,
+            1277589147,
+            1036552909,
+            1695975319,
+            642191023,
+            882578300,
+            83484318,
+            571703142,
+            771419747,
+            987888803,
+            784951493,
+            2135290383,
+            488730698,
+            749334997
+          ],
+          "source_success_regressions": 0,
+          "source_successes": 24,
+          "zero_observed_regressions": true
+        }
+      ],
+      "sha256": "018a05616e1eb3581d5248852a17d9bc86018b4ca38381698de09a3a199fd714"
+    },
+    {
+      "path": "/private/tmp/eggroll-walking-wedge-confirmation-20260901-v1-latest/confirmation-v3/evidence/manifest.json",
+      "reports": [
+        {
+          "adapted_successes": 32,
+          "bank_sha256": "106a0c05307852fc6c0b05c383ab658ce2c54fef7d161105cdf4ca97c983d307",
+          "claim_scope": "zero observed regressions under the capability's terminal-success semantics on this sealed paired bank",
+          "improvement_case_ids": [
+            "confirmation-wedge-vx-0.32-002",
+            "confirmation-wedge-vx-0.32-004",
+            "confirmation-wedge-vx-0.32-007",
+            "confirmation-wedge-vx-0.36-000",
+            "confirmation-wedge-vx-0.36-001",
+            "confirmation-wedge-vx-0.40-001",
+            "confirmation-wedge-vx-0.40-002",
+            "confirmation-wedge-vx-0.40-005",
+            "confirmation-wedge-vx-0.40-006"
+          ],
+          "paired_cases": 32,
+          "profile_role": "shifted",
+          "profile_sha256": "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+          "regression_case_ids": [],
+          "seeds": [
+            648444171,
+            1186503930,
+            1276606441,
+            468292597,
+            1693155981,
+            873049040,
+            935999837,
+            1257237688,
+            526410391,
+            1518182166,
+            489294842,
+            1824340368,
+            615051196,
+            32307159,
+            190338338,
+            1995427100,
+            1706887142,
+            1432065517,
+            794614955,
+            2119048703,
+            1750503506,
+            1152331179,
+            1809408489,
+            1450347327,
+            2042044477,
+            28657250,
+            1252331117,
+            685495213,
+            259903805,
+            1971992124,
+            926762350,
+            1818302817
+          ],
+          "source_success_regressions": 0,
+          "source_successes": 23,
+          "zero_observed_regressions": true
+        }
+      ],
+      "sha256": "3a694e6b845c203789e5979882ec3132b98f6e6baac9f46728a72bc9e44f9d4a"
+    }
+  ],
+  "independent_banks": 2,
+  "release_scope": {
+    "activation_predicate": "hardware.feet.profile_sha256 == 3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+    "activation_profile_role": "shifted",
+    "mode": "profile_specific",
+    "profile_sha256s": [
+      [
+        "shifted",
+        "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2"
+      ]
+    ],
+    "required_retention_roles": [
+      "shifted"
+    ],
+    "scope_id": "alpha-walking-wedge-15deg-gen85-v1",
+    "source_fallback_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "unknown_profile_action": "retain_source"
+  },
+  "release_scope_sha256": "4435a7837cedc7f480e961d2f43d5abc3800eeb5d8356aed1b1bc27a1dbcfd00",
+  "retention_profile_roles": [
+    "shifted"
+  ],
+  "schema": "eggroll-autopatch-paired-non-regression-v2",
+  "source_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+  "source_success_regressions": 0,
+  "status": "pass"
+}

@@ -1,0 +1,108 @@
+{
+  "adapted_policy": {
+    "checkpoint_generation": 100,
+    "checkpoint_sha256": "ceaf5ef1cb5becff991aebcd298541ba34f6d76d0bef4f198f363cae81c8b4cc",
+    "exported_onnx_sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+    "independent_maximum_runtime_error": 9.5367431640625e-7,
+    "modified_parameters": 1806,
+    "remote_collection_runtime_error": 1.34e-5
+  },
+  "calibration": {
+    "artifact_sha256": "e6344cb0c64f952eeafce5b684f6b3ab0bfb13d7bd96a41b2bb19099fa47fb99",
+    "job_id": "6a94332345686a1580c1848b",
+    "repository": "richoakley/eggroll-posttrain-calibration-20260830-v1",
+    "selected_profile": "calibration-6p5V-lag16",
+    "selected_profile_sha256": "3b55ad4ff9c3d7a400ad9c94b2a102a7210be203c7db84a9a94ce3d15e3b5f81"
+  },
+  "conclusion": {
+    "fresh_shift_adapted_successes": 32,
+    "fresh_shift_source_successes": 17,
+    "nominal_adapted_successes": 32,
+    "nominal_source_successes": 32,
+    "output_layer_posttraining": "go",
+    "worlds_per_replay": 32
+  },
+  "evaluator_fix": {
+    "commit": "4605d74",
+    "effect": "minimum compiled lag capacity six while preserving exact four-step nominal applied lag"
+  },
+  "production_control": {
+    "filename": "alpha_stand.onnx",
+    "sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b"
+  },
+  "product_release": {
+    "adapted_model_bundle_sha256": "6088764a15fd9c1394d40fe0d7dd78a2ca1abe8283da94489c2ec22666ce1e4e",
+    "adapted_model_version": "1.0.0",
+    "adapted_runtime_verification_sha256": "67aed8cdfa12d01a9e11354eba925f65c7514f987e8b060913fc25dcdb4a370c",
+    "hero_manifest_sha256": "f3ba766581d0733a92514e1a4a3ac665dd9b91939f93ab825e979ba16059808d",
+    "hero_sidecar_sha256": "40ec761f69fe93d683de4ce2ef043dce9a58b7e60000db25f9ffcf9dc42a740f",
+    "hero_video_sha256": "1a4192429058075396e4eb209a26ba7c306663f109658ff3dcea6662aaba29d6",
+    "manifest_sha256": "f3ba766581d0733a92514e1a4a3ac665dd9b91939f93ab825e979ba16059808d",
+    "model_channel": "model-stand",
+    "production_loader": "duck_control::policy::Policy::load",
+    "release_bundles_signed": false,
+    "source_model_bundle_sha256": "4bc59bd270b4619260fefb3fb193c246b701c676819da0443d0c1768984c5048",
+    "source_model_version": "0.9.0",
+    "source_runtime_verification_sha256": "6a9d49df76e642677f2ee922a08af2a6e1b6893d474fcfce54a83cb66d9d7c4a"
+  },
+  "record_version": 2,
+  "replays": [
+    {
+      "bank_sha256": "47ee756614e6dafa8a65da6e1aabc71a97b9373b9e62b0f26bd34bd9d7f2ff7f",
+      "job_id": "6a948ebc45686a1580c1921a",
+      "name": "source lag16",
+      "profile_sha256": "3b55ad4ff9c3d7a400ad9c94b2a102a7210be203c7db84a9a94ce3d15e3b5f81",
+      "repository": "richoakley/eggroll-posttrain-replay-source-lag16-20260830-v1",
+      "summary_sha256": "093c5f7c69d6a205c57516f65b65fb90acbbebbad1c910aedbab16994c960e70",
+      "terminal_successes": 17,
+      "videos": 32
+    },
+    {
+      "bank_sha256": "47ee756614e6dafa8a65da6e1aabc71a97b9373b9e62b0f26bd34bd9d7f2ff7f",
+      "job_id": "6a948ecb45686a1580c1921c",
+      "name": "adapted lag16",
+      "profile_sha256": "3b55ad4ff9c3d7a400ad9c94b2a102a7210be203c7db84a9a94ce3d15e3b5f81",
+      "repository": "richoakley/eggroll-posttrain-replay-adapted-lag16-20260830-v1",
+      "summary_sha256": "c1f4f9df91db6c1d1674931d01a8e2a884c103d8daa548f12e0517781ecc6605",
+      "terminal_successes": 32,
+      "videos": 32
+    },
+    {
+      "bank_sha256": "e0621068624fb9bf0442f561cb60d68ef3dc370f42be771f06cbfb70f267a45e",
+      "job_id": "6a94935c984507d9db4ed705",
+      "name": "source nominal",
+      "profile_sha256": "2b3128025393155590b42fa7a85903d001ff2faba5748c19e95856ef0869b49f",
+      "repository": "richoakley/eggroll-posttrain-replay-source-nominal-20260830-v2",
+      "summary_sha256": "9820e6b4205b706904f8f7a50b890f854b1a08b7d70a8bb38c62912de560ce56",
+      "terminal_successes": 32,
+      "videos": 32
+    },
+    {
+      "bank_sha256": "e0621068624fb9bf0442f561cb60d68ef3dc370f42be771f06cbfb70f267a45e",
+      "job_id": "6a94936b45686a1580c192d9",
+      "name": "adapted nominal",
+      "profile_sha256": "2b3128025393155590b42fa7a85903d001ff2faba5748c19e95856ef0869b49f",
+      "repository": "richoakley/eggroll-posttrain-replay-adapted-nominal-20260830-v2",
+      "summary_sha256": "b7ba641b75f60e40e3c5a7d3efbf9381361fd8418236cf25ece20bc069fc74d3",
+      "terminal_successes": 32,
+      "videos": 32
+    }
+  ],
+  "smoke": {
+    "job_id": "6a943dc8984507d9db4ed0dd",
+    "repository": "richoakley/eggroll-posttrain-smoke-20260830-v2"
+  },
+  "status": "complete",
+  "training": {
+    "best_evaluation_sha256": "620fe15d47e1a3ebf2aea3a5ed3f095a40d807d3be4ddccbc9c46a1684b0f993",
+    "job_id": "6a943fda984507d9db4ed102",
+    "nominal_source_successes": 32,
+    "nominal_worlds": 32,
+    "repository": "richoakley/eggroll-posttrain-alpha-20260830-v1",
+    "selected_nominal_successes": 32,
+    "selected_shift_successes": 64,
+    "shift_source_successes": 26,
+    "shift_worlds": 64,
+    "source_commit": "597a2670676c65b57da9264ed5c2f3feaf2c7fb7"
+  }
+}

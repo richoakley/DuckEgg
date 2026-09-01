@@ -1,0 +1,17 @@
+{
+  "activation_predicate": "hardware.feet.profile_sha256 == 3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+  "activation_profile_role": "shifted",
+  "mode": "profile_specific",
+  "profile_sha256s": [
+    [
+      "shifted",
+      "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2"
+    ]
+  ],
+  "required_retention_roles": [
+    "shifted"
+  ],
+  "scope_id": "alpha-walking-wedge-15deg-gen85-v1",
+  "source_fallback_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+  "unknown_profile_action": "retain_source"
+}

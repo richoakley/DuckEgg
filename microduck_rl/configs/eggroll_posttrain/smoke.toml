@@ -1,0 +1,19 @@
+[posttrain]
+task = "Mjlab-StandUp-Flat-MicroDuck"
+run_name = "smoke"
+output_dir = "runs/eggroll-posttrain"
+device = "cuda:0"
+seed = 20260830
+population = 16
+generations = 1
+train_episodes_per_pose = 1
+heldout_episodes_per_pose = 1
+nominal_episodes_per_pose = 1
+eval_every = 1
+save_every = 1
+sigma = 0.015
+learning_rate = 0.003
+rank = 4
+noise_reuse = 1
+nominal_retention_tolerance = 0.05
+success_hold_s = 1.0
