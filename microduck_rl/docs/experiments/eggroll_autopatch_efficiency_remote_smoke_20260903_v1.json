@@ -1,0 +1,150 @@
+{
+  "schema": "eggroll-autopatch-efficiency-remote-smoke-v1",
+  "status": "trainer-complete-smoke-invariants-pass-launcher-wrapper-error",
+  "evidence_role": "non-evidence CUDA smoke",
+  "captured_at": "2026-09-03",
+  "ten_x_target_achieved": false,
+  "release_eligible": false,
+  "job": {
+    "provider": "Hugging Face Jobs",
+    "namespace": "richoakley",
+    "job_id": "6a98ee4b21c5aa7c8364f5fc",
+    "job_url": "https://huggingface.co/jobs/richoakley/6a98ee4b21c5aa7c8364f5fc",
+    "flavor": "a10g-large",
+    "accelerator_count": 1,
+    "observed_device": "NVIDIA A10G",
+    "timeout": "30m",
+    "terminal_stage": "ERROR",
+    "terminal_message": "Job failed with exit code: 1. Reason: Error",
+    "trainer_status": "complete",
+    "wrapper_failure": "the original smoke wrapper incorrectly required a release-retained candidate for select-export after the trainer completed",
+    "created_at": "2026-09-03T03:49:31.008000+00:00",
+    "observed_running_at": "2026-09-03T03:56:01.707703+00:00",
+    "observed_terminal_at": "2026-09-03T04:13:43.329702+00:00",
+    "observed_scheduler_wait_seconds": 390.699703,
+    "observed_running_to_terminal_seconds": 1061.621999,
+    "observed_created_to_terminal_seconds": 1452.321702,
+    "accelerator_allocation_seconds": null,
+    "accelerator_allocation_seconds_reason": "the runner and job API do not expose an authoritative scheduler allocation clock"
+  },
+  "submission": {
+    "approved_source_commit": "5add050ee62d746a8524bae00d4d6325a974aece",
+    "source_repository": "richoakley/eggroll-autopatch-source-20260903-033440",
+    "source_repository_commit": "87aacefd6faba0a599e4925e16839dcc6f8cc80f",
+    "source_bundle": "source-20260903-033440.tar.gz",
+    "source_bundle_bytes": 15157819,
+    "source_bundle_sha256": "6e7d02000922567a5c0c0fdb2b403ac7e021619488d74ab9f380a52ebfe6cf3b",
+    "output_repository": "richoakley/eggroll-autopatch-efficiency-smoke-20260902-v1",
+    "output_repository_commit": "7f6fafb3393a9fe8916688814503f18a6b3b3c0a",
+    "aborted_pre_job_upload_attempt": {
+      "source_repository": "richoakley/eggroll-autopatch-source-20260903-032606",
+      "bundle_committed": false,
+      "job_created": false,
+      "reason": "Xet transfer stalled at 10 percent; the live uploader was stopped only after a read-only server check confirmed no bundle commit"
+    }
+  },
+  "identities": {
+    "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "base_campaign_sha256": "8856e98b5539f559f2426fc0a670db3f1bf8701363883091c6f1217ea41df73f",
+    "execution_campaign_sha256": "8a4950e35507eff807631b0c49f5af8be293aa5cd07a14304865fad319fc5a7b",
+    "release_scope_sha256": "4435a7837cedc7f480e961d2f43d5abc3800eeb5d8356aed1b1bc27a1dbcfd00",
+    "training_seed": 20262031,
+    "actor_widths": [61, 512, 256, 128, 14],
+    "trainable_scope": "final-affine-weight-and-bias",
+    "trainable_parameters": 1806
+  },
+  "cuda_preflight": {
+    "status": "pass",
+    "torch_cuda_available": true,
+    "torch_cuda_device_count": 1,
+    "torch_device": "NVIDIA A10G",
+    "jax_backend": "gpu",
+    "jax_devices": ["CudaDevice(id=0)"],
+    "torch_jax_dlpack_round_trip": "pass-correct-device-dtype-shape-and-values"
+  },
+  "optimizer_result": {
+    "algorithm": "hyperscalees-eggroll",
+    "population": 16,
+    "rank": 4,
+    "generations": 1,
+    "worlds_per_candidate": 4,
+    "fitness_unique": 16,
+    "fitness_mean": 0.5,
+    "fitness_std": 0.30731815099716187,
+    "parameter_delta_norm": 0.1274895711180814,
+    "generation_wall_seconds": 66.70292231100007,
+    "generation_checkpoint_written": true,
+    "generation_checkpoint_sha256": "89d1e0301766471bce43c755caf968fdf5339c37112cd261b926341850939293",
+    "last_checkpoint_byte_identical": true,
+    "release_retained_candidate_written": false
+  },
+  "selection_result": {
+    "nominal_terminal_success_rate": 0.96875,
+    "nominal_floor": 0.96875,
+    "nominal_retention_passed": true,
+    "shifted_terminal_success_rate": 0.6875,
+    "shifted_min_command_success_rate": 0.5,
+    "release_scope_retention_passed": false,
+    "interpretation": "acceptable for a plumbing smoke and not release evidence; full campaigns still require every unchanged retention and qualification gate"
+  },
+  "interaction_accounting": {
+    "candidate_evaluations": 16,
+    "optimization_world_rollouts": 68,
+    "optimization_requested_simulator_steps": 17000,
+    "optimization_executed_vector_slot_steps": 16786,
+    "optimization_active_interaction_steps": 6965,
+    "total_world_rollouts": 196,
+    "total_requested_simulator_steps": 49000,
+    "total_executed_vector_slot_steps": 45452,
+    "total_active_interaction_steps": 35631,
+    "world_constructions": 85,
+    "startup_identities_cached_this_process": 68,
+    "executed_steps_complete": true,
+    "candidate_physics_substeps": 64000
+  },
+  "wall_time": {
+    "trainer_process_seconds": 930.934297379,
+    "generation_seconds": 66.70292231100007,
+    "unattributed_residual_seconds": 864.231375068,
+    "phase_profile_enabled": false,
+    "interpretation": "the residual includes CUDA compilation, environment construction, source baseline and selection; the original launcher omitted synchronized phase profiling, so it cannot be split honestly"
+  },
+  "artifact_hashes": {
+    "source_manifest_json": "52dc7924bf24cb3bfbeaa90003877b7e6ac160f7cbdf4496ba6417277473854e",
+    "campaign_json": "06b37004c9b6d61c8d808158b2ed825cd7cdc65385d5151e61f762994a732891",
+    "release_scope_json": "1e2117582529015317401d9c8fc22084df146c4d45be08178ccb2e0334656cd6",
+    "accounting_json": "639b782fabb107e5f0c29800e04028a5d850ba1e412ace73e3e42d24a713cda8",
+    "budget_json": "5c14ebdd40211452f994d069da706bb323451db9f1199bc2d37c197a7c087589",
+    "config_json": "ebf6c7b6f26e0928d4d0915514cd743ed870824fec7e4eb7331f8040e4544def",
+    "metrics_jsonl": "306fcd4c35d034727926e6d0e8460d0c256dc1c043153c790abe2fccfec2403c",
+    "phase_profile_json": "c2845b52411cc5785681e053c5f9887e14a51a5e890742195e59bf29390d1836",
+    "source_baseline_json": "8814117ad1512c018b4fec8ff2e4d32e35761589671f5c1ad309b3e0a4d55db8",
+    "generation_checkpoint": "89d1e0301766471bce43c755caf968fdf5339c37112cd261b926341850939293"
+  },
+  "posthoc_validation": {
+    "status": "pass",
+    "schema": "eggroll-autopatch-cuda-smoke-validation-v1",
+    "validator_source_sha256": "61c2489928a05240e73c6b91504bd161820b42b9e45544ac901e20a4ea2cf7b8",
+    "validation_record_sha256": "67388ddfd17b5e712cba34bfee6911e0dbb0fea72be09af31ef8041f6ea6382c",
+    "validated": [
+      "exact source, campaign and release-scope identities",
+      "61-input and 14-output policy contract",
+      "final-affine-only 1806-parameter scope",
+      "finite non-identical fitness",
+      "non-zero EGGROLL update",
+      "generation checkpoint integrity",
+      "exact optimization and total interaction accounting"
+    ]
+  },
+  "corrective_action": {
+    "status": "implemented-locally-not-remotely-retested",
+    "root_cause_fix_commit": "dde307341c48b9014d2e616d6443043bc74e10bb",
+    "implementation_commit": "21be49798ee5a6016140d6a00c846c3bc5ccd590",
+    "changes": [
+      "smoke mode validates CUDA, optimizer, checkpoint and accounting invariants without requiring a release-retained export candidate",
+      "train mode continues to require a retained candidate and select-export",
+      "future smoke mode enables synchronized profiling for generation zero and generation one"
+    ]
+  },
+  "claim_boundary": "the trainer and CUDA smoke invariants passed, but the provider job ended ERROR because of the original wrapper mismatch; this run is neither a release-qualified repair nor evidence of the 10x target"
+}

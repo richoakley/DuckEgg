@@ -56,15 +56,15 @@ def evaluate_paired_non_regression(
         raise TypeError("paired evidence bank must be a non-empty list")
     if not isinstance(rows, list):
         raise TypeError("paired evidence rows must be a list")
-    bank_by_id = {
-        case.get("case_id"): case for case in bank if isinstance(case, dict)
-    }
+    bank_by_id = {case.get("case_id"): case for case in bank if isinstance(case, dict)}
     if len(bank_by_id) != len(bank) or not all(
         isinstance(case_id, str) and case_id for case_id in bank_by_id
     ):
         raise ValueError("paired evidence bank needs unique non-empty case ids")
     seeds = [case.get("seed") for case in bank]
-    if not all(isinstance(seed, int) for seed in seeds) or len(set(seeds)) != len(seeds):
+    if not all(isinstance(seed, int) for seed in seeds) or len(set(seeds)) != len(
+        seeds
+    ):
         raise ValueError("paired evidence bank needs unique integer seeds")
     bank_sha256 = hashlib.sha256(
         json.dumps(bank, sort_keys=True, separators=(",", ":")).encode()
@@ -168,7 +168,9 @@ def build_paired_non_regression_envelope(
             "release requires at least two independent paired non-regression banks"
         )
     if release_scope.source_fallback_sha256 != source_sha256:
-        raise ValueError("release scope fallback does not match the sealed source bytes")
+        raise ValueError(
+            "release scope fallback does not match the sealed source bytes"
+        )
     expected_profiles = dict(release_scope.profile_sha256s)
     records = []
     for path in manifests:
@@ -203,9 +205,7 @@ def build_paired_non_regression_envelope(
         raise ValueError("paired non-regression evidence banks are not independent")
     seen_seeds: set[int] = set()
     for row in records:
-        report_bank_sha256s = {
-            report["bank_sha256"] for report in row["reports"]
-        }
+        report_bank_sha256s = {report["bank_sha256"] for report in row["reports"]}
         if len(report_bank_sha256s) != 1:
             raise ValueError("retention profiles in one manifest use different banks")
         seeds = set(row["reports"][0]["seeds"])
@@ -257,7 +257,9 @@ def validate_routing_evidence(
         if evidence.get(key) != value
     }
     if mismatches:
-        raise ValueError(f"routing attestation does not enforce release scope: {mismatches}")
+        raise ValueError(
+            f"routing attestation does not enforce release scope: {mismatches}"
+        )
     if evidence.get("production_path") != "updaterd::profile_scoped_model_activation":
         raise ValueError("routing attestation did not use the production updater path")
     routes = evidence.get("routes")
@@ -290,7 +292,9 @@ def validate_routing_evidence(
     )
     missing = required - observed
     if missing:
-        raise ValueError(f"routing attestation is missing fail-closed routes: {missing}")
+        raise ValueError(
+            f"routing attestation is missing fail-closed routes: {missing}"
+        )
 
 
 def _compare(value: float, gate: ReleaseGate) -> bool:

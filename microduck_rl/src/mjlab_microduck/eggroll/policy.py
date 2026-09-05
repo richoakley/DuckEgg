@@ -67,6 +67,9 @@ class OutputLayerPolicy:
             "weight": jnp.asarray(deployed.output_weight, dtype=jnp.float32),
             "bias": jnp.asarray(deployed.output_bias, dtype=jnp.float32),
         }
+        # JAX arrays are immutable; retaining this initial tree provides the exact
+        # source comparator after ``self.params`` advances during post-training.
+        self.source_params: PyTree = self.params
         root_key = jax.random.key(config.seed)
         weight_key, bias_key = jax.random.split(root_key)
         self.es_tree_key: PyTree = {"weight": weight_key, "bias": bias_key}
@@ -161,6 +164,16 @@ class OutputLayerPolicy:
                 f"Base observations must be [batch, 61], got {observations.shape}"
             )
         return self._base_actions(self.params, observations)
+
+    def source_actions(self, observations: jax.Array) -> jax.Array:
+        """Evaluate the immutable deployed source after the adapted mean changes."""
+
+        observations = jnp.asarray(observations, dtype=jnp.float32)
+        if observations.ndim != 2 or observations.shape[1] != 61:
+            raise ValueError(
+                f"Source observations must be [batch, 61], got {observations.shape}"
+            )
+        return self._base_actions(self.source_params, observations)
 
     def update(self, raw_fitness: np.ndarray, *, generation: int) -> np.ndarray:
         fitness = jnp.asarray(raw_fitness, dtype=jnp.float32)

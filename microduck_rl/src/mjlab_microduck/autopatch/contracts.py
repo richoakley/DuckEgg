@@ -180,14 +180,18 @@ class ReleaseScope(CanonicalContract):
 
     def __post_init__(self) -> None:
         if self.mode not in ("profile_specific", "multi_profile"):
-            raise ValueError("release scope mode must be profile_specific or multi_profile")
+            raise ValueError(
+                "release scope mode must be profile_specific or multi_profile"
+            )
         if self.unknown_profile_action not in (
             "retain_source",
             "block_adapted_policy",
         ):
             raise ValueError("unknown profile action must fail closed")
         if not self.scope_id or not self.activation_predicate:
-            raise ValueError("release scope id and activation predicate cannot be empty")
+            raise ValueError(
+                "release scope id and activation predicate cannot be empty"
+            )
         if len(self.source_fallback_sha256) != 64:
             raise ValueError("release scope source fallback must be a SHA-256")
         if self.source_fallback_sha256 != self.source_fallback_sha256.lower():
@@ -198,13 +202,19 @@ class ReleaseScope(CanonicalContract):
         if not self.required_retention_roles or len(
             self.required_retention_roles
         ) != len(set(self.required_retention_roles)):
-            raise ValueError("release scope retention roles must be non-empty and unique")
+            raise ValueError(
+                "release scope retention roles must be non-empty and unique"
+            )
         unknown_roles = set(self.required_retention_roles) - set(roles)
         if unknown_roles:
-            raise ValueError(f"release scope has unknown retention roles: {unknown_roles}")
+            raise ValueError(
+                f"release scope has unknown retention roles: {unknown_roles}"
+            )
         for role, sha256 in self.profile_sha256s:
             if not role or len(sha256) != 64 or sha256 != sha256.lower():
-                raise ValueError("release scope profiles need names and lowercase SHA-256s")
+                raise ValueError(
+                    "release scope profiles need names and lowercase SHA-256s"
+                )
 
         if self.mode == "profile_specific":
             if self.activation_profile_role is None:
@@ -219,16 +229,19 @@ class ReleaseScope(CanonicalContract):
                 )
         else:
             if self.activation_profile_role is not None:
-                raise ValueError("multi-profile scope cannot name one activation profile")
+                raise ValueError(
+                    "multi-profile scope cannot name one activation profile"
+                )
             if set(self.required_retention_roles) != set(roles):
-                raise ValueError("multi-profile scope must retain every declared profile")
+                raise ValueError(
+                    "multi-profile scope must retain every declared profile"
+                )
 
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> ReleaseScope:
         document = dict(value)
         document["profile_sha256s"] = tuple(
-            (str(role), str(sha256))
-            for role, sha256 in document["profile_sha256s"]
+            (str(role), str(sha256)) for role, sha256 in document["profile_sha256s"]
         )
         document["required_retention_roles"] = tuple(
             str(role) for role in document["required_retention_roles"]

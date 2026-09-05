@@ -1,0 +1,125 @@
+{
+  "schema": "eggroll-autopatch-efficiency-reference-v1",
+  "status": "frozen-reference",
+  "claim_scope": "production-runtime digital twin; no physical robot evidence",
+  "reference_commit": "43dfb11a893df4ccccc90b80923820fd5cc216f9",
+  "benchmark_contract": {
+    "artifact_id": "alpha-walking",
+    "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "deployment_condition_id": "replacement-wedge-foot-pitch-15deg-v1",
+    "deployment_profile_sha256": "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+    "observation_width": 61,
+    "action_width": 14,
+    "trainable_scope": "final-affine-weight-and-bias",
+    "trainable_parameters": 1806,
+    "optimizer": "hyperscalees-eggroll",
+    "task_return_role": "diagnostic-only",
+    "release_scope_mode": "profile_specific",
+    "activation_profile_role": "shifted",
+    "unknown_profile_action": "retain_source",
+    "selection_confirmation_release_banks_disjoint": true
+  },
+  "reference_identities": {
+    "campaign_canonical_sha256": "e2ddf3a989c14aad12301ef2e9713390377be5cb52030bfbce58fd30c9ffdd20",
+    "campaign_file_sha256": "41a0df4bdbe8c6ca471bf9b56dd2280ab6d0c32e1af26cd0090ad0e988474fa2",
+    "heldout_bank_sha256": "9deed06a134abe4f7179cc1ad5bc1a328d057415574552bbb5a731f5f0173093",
+    "nominal_bank_sha256": "65ad816635cc0ddfcc3d25d7e68b5caf4ee9ed292ce3ae3c1fc1aade066334cf",
+    "release_scope_canonical_sha256": "4435a7837cedc7f480e961d2f43d5abc3800eeb5d8356aed1b1bc27a1dbcfd00",
+    "release_scope_file_sha256": "1e2117582529015317401d9c8fc22084df146c4d45be08178ccb2e0334656cd6",
+    "two_bank_non_regression_sha256": "ffe2011d2c59a186abbcfaa6e128ffdb53cc7781be53e609ef98864162f26879",
+    "selected_policy_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+    "training_job_id": "6a95de9721c5aa7c8364a0ec",
+    "training_artifact_repository": "richoakley/eggroll-walking-wedge-train-20260831-v1"
+  },
+  "original_training_cost": {
+    "population": 512,
+    "generations_completed": 100,
+    "worlds_per_candidate": 4,
+    "requested_steps_per_world": 250,
+    "candidate_evaluations": 51200,
+    "optimization_world_rollouts": 204800,
+    "requested_optimization_simulator_steps": 51200000,
+    "executed_optimization_simulator_steps": null,
+    "executed_optimization_steps_status": "not recoverable: historical metrics retained mean survival but not the per-generation sum of episode_steps",
+    "startup_world_constructions": 464,
+    "campaign_wall_seconds": 13698.733898698003,
+    "accelerator": "A10G Large",
+    "accelerator_count": 1,
+    "training_seeds": 1
+  },
+  "original_evaluation_cost": {
+    "source_baseline": {
+      "shifted_world_rollouts": 32,
+      "nominal_world_rollouts": 32,
+      "requested_simulator_steps": 16000,
+      "executed_simulator_steps": 13982
+    },
+    "periodic_selection": {
+      "interval_generations": 5,
+      "attempts": 20,
+      "shifted_world_rollouts_per_attempt": 32,
+      "nominal_world_rollouts_per_attempt": 32,
+      "requested_simulator_steps_total": 320000,
+      "executed_simulator_steps_total": null,
+      "executed_steps_status": "not recoverable from historical metrics"
+    },
+    "production_runtime_and_confirmation": {
+      "first_paired_bank_cases": 32,
+      "first_paired_bank_accepted_source_adapted_rollouts": 64,
+      "confirmation_bank_cases": 32,
+      "confirmation_accepted_source_adapted_rollouts": 64,
+      "combined_accepted_source_adapted_rollouts": 128,
+      "transport_retries_excluded_from_behavioral_rows_but_preserved": 4
+    }
+  },
+  "reference_result": {
+    "selected_generation": 85,
+    "first_campaign_side_shifted_32_of_32_generation": 5,
+    "first_original_campaign_consecutive_gate_generations": [50, 55],
+    "source_successes_two_shifted_banks": 47,
+    "adapted_successes_two_shifted_banks": 64,
+    "lost_source_successes_two_shifted_banks": 0,
+    "repaired_source_failures_two_shifted_banks": 17,
+    "independent_onnx_parity_max_abs_error": 4.76837158203125e-07,
+    "production_routing_attestation": "not completed in the historical record",
+    "physical_robot_evidence": false
+  },
+  "standup_reference": {
+    "status": "successful historical post-training reference, not the primary 10x benchmark",
+    "source_policy_sha256": "1569268713e40deea795dd2922dba50d3621e15a872855408b6b1b125b1c094b",
+    "selected_generation": 100,
+    "selected_checkpoint_sha256": "ceaf5ef1cb5becff991aebcd298541ba34f6d76d0bef4f198f363cae81c8b4cc",
+    "selected_policy_sha256": "bd2bfbb22d7a0942a2f83e3164c035fa887580e29e66eb28c9a809e9ed8be8db",
+    "population": 512,
+    "generations_completed": 100,
+    "worlds_per_candidate": 4,
+    "requested_steps_per_world": 300,
+    "candidate_evaluations": 51200,
+    "optimization_world_rollouts": 204800,
+    "requested_optimization_simulator_steps": 61440000,
+    "executed_optimization_simulator_steps": null,
+    "executed_steps_status": "not recoverable: historical summaries did not retain episode-step totals",
+    "fixed_selection_worlds_per_attempt": 96,
+    "periodic_selection_attempts": 20,
+    "requested_periodic_selection_steps": 576000,
+    "reported_job_wall_time": "approximately 5.5 hours on one A10G Large",
+    "summed_generation_wall_seconds": 5492.624871840992,
+    "wall_time_note": "generation timings exclude baseline, evaluation outside timed generations, startup and job-wrapper overhead",
+    "artifact_index_sha256": "f3da494624df115833693b21b2b2c4e7fcb7d91b82f3e9143e5b4dc0828fc55a",
+    "local_config_sha256": "8c7bc56c665c695d5df9fc21351d21b04e5c380bb32b4fd2342c90075a97dfe2",
+    "local_metrics_sha256": "c0ae69dacce66739fa341bbc35ea89ee9d73fd0cfd899c56bfd7841a0b7972a7",
+    "local_source_baseline_sha256": "b409792613ebf5f8e57b4f31e147a1673882869bc2ebbd8ba085b95bf7d65645"
+  },
+  "ten_x_target": {
+    "maximum_requested_optimization_simulator_steps": 5120000,
+    "equivalent_reference_generations_at_population_512": 10,
+    "success_rate_requirement": "at least two of three independent training seeds",
+    "status": "unexecuted"
+  },
+  "source_record_hashes": {
+    "repository_artifact_index_sha256": "d4bffe6a851b8dee2657b2c9a400379544886b2e8fe0812898a82a69f9517d9e",
+    "local_training_budget_sha256": "c574bdbe7d065a420c6fead66fcc35d52d3819a8e2278c36e0b73ad8463c53be",
+    "local_training_metrics_sha256": "e5039c394da1300a8796fc72e9cc86c1848eec562e7c337a51d8be7d3a7deb63",
+    "local_source_baseline_sha256": "82a5433823b4425c3ef880ae0dcf656a77fcb43c3b31fe204e224976d8c9218f"
+  }
+}

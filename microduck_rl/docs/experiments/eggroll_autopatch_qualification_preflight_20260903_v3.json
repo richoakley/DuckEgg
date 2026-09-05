@@ -1,0 +1,102 @@
+{
+  "schema": "eggroll-autopatch-qualification-preflight-record-v1",
+  "status": "pass",
+  "qualification_status": "eligible",
+  "claim_boundary": "remote production-runtime environment and six-stage orchestration validation only; the historical policy is not a new training or efficiency result and no physical robot was used",
+  "execution": {
+    "job_id": "6a993a140718b0f6d8914057",
+    "provider_status": "COMPLETED",
+    "job_url": "https://huggingface.co/jobs/richoakley/6a993a140718b0f6d8914057",
+    "output_repository": "richoakley/eggroll-autopatch-qualification-preflight-20260903-v3",
+    "output_repository_commit": "420fbc66451df2cf84f95667290fd6c96426fe8a",
+    "source_repository": "richoakley/eggroll-autopatch-qualification-source-20260903-091244"
+  },
+  "identities": {
+    "source_commit": "7f28ca702940d18b8e0fc66618440b63ee10f5d5",
+    "source_bundle_sha256": "99b3f29024cf8323162ea88ce0cf613e356d470fedf4a67422b8dffbab20818f",
+    "preflight_bootstrap_sha256": "903c42a3d48a7fd8ee87b01c6616d36c67a85abfc7fb20073fb93407832fc391",
+    "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "candidate_checkpoint_sha256": "c4fd2082be04b5b8718caf63645c8996c5bee4f0b35f0cdf94c61c96b188978b",
+    "expected_adapted_policy_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+    "exported_adapted_policy_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+    "release_scope_sha256": "4435a7837cedc7f480e961d2f43d5abc3800eeb5d8356aed1b1bc27a1dbcfd00",
+    "qualification_plan_sha256": "8d7758dbd02c5e8148cb05261943e4b5a35eb4a1db09829cd3f196b6fbd52a41",
+    "qualification_command_spec_sha256": "e896b926de8335b44d1b2801bbaa444be039021f0fa6e6fd29553ec15acb8da9"
+  },
+  "stages": [
+    {
+      "stage": "release_scope_retention",
+      "status": "pass",
+      "retained_source_success_rate": 1.0,
+      "repaired_source_failure_rate": 1.0
+    },
+    {
+      "stage": "onnx_parity",
+      "status": "pass",
+      "max_abs_error": 0.0000016689300537109375,
+      "threshold_exclusive": 0.00001,
+      "fixture_count": 64,
+      "patch_scope": "final-affine-weight-and-bias"
+    },
+    {
+      "stage": "production_runtime",
+      "status": "pass",
+      "source_behavior_reference_id": "production_runtime-linux-cpu",
+      "bank_sha256": "ba760ae8dcbb6c0b5827ab8c38bcbe6c4f4a5b41bc85864c0447af24f55eff01",
+      "paired_cases": 32,
+      "source_successes": 21,
+      "adapted_successes": 32,
+      "source_success_regressions": 0,
+      "requested_simulator_steps": 16000,
+      "executed_simulator_steps": 14423,
+      "all_production_rust_traces": "pass"
+    },
+    {
+      "stage": "independent_confirmation",
+      "status": "pass",
+      "source_behavior_reference_id": "independent_confirmation-linux-cuda:0",
+      "bank_sha256": "106a0c05307852fc6c0b05c383ab658ce2c54fef7d161105cdf4ca97c983d307",
+      "paired_cases": 32,
+      "source_successes": 23,
+      "adapted_successes": 32,
+      "source_success_regressions": 0,
+      "requested_simulator_steps": 16000,
+      "executed_simulator_steps": 14977,
+      "all_production_rust_traces": "pass",
+      "combined_two_bank_non_regression": "pass"
+    },
+    {
+      "stage": "profile_routing",
+      "status": "pass",
+      "attested_profile_selected_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+      "unknown_profile_selected_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+      "production_path": "updaterd::profile_scoped_model_activation",
+      "signature_and_artifact_verification": "passed_by_real_engine"
+    },
+    {
+      "stage": "signed_activation_and_rollback",
+      "status": "pass",
+      "activated_sha256": "f6c2378b415cbf5449e21d1bd4f1c1df72ac7817e8d4f39caa943c8c22221b5c",
+      "fresh_process_rollback": true,
+      "rollback_restored_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+      "exact_source_restored": true
+    }
+  ],
+  "negative_preflights": [
+    {
+      "job_id": "6a991d8421c5aa7c8364f9c9",
+      "status": "ERROR",
+      "finding": "runtime episode_steps are integral JSON numbers represented as floats; the original qualification cost parser rejected them"
+    },
+    {
+      "job_id": "6a99307621c5aa7c8364fb69",
+      "status": "ERROR",
+      "finding": "Linux CPU reproduced 21 source successes rather than the macOS CPU aggregate of 24, exposing an invalid cross-platform aggregate-source assumption"
+    }
+  ],
+  "corrective_controls": {
+    "interaction_cost": "accept finite positive integral real JSON values without rounding non-integral values",
+    "source_behavior": "seal exact source-failure case sets by stage, platform and device; reject unsupported environments and equal-count case swaps",
+    "adapted_gate": "unchanged 32-of-32 on both banks with zero casewise source-success regressions"
+  }
+}

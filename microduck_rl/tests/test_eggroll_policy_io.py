@@ -146,6 +146,7 @@ def test_output_layer_policy_is_antithetic_and_updates(tmp_path: Path) -> None:
     observations = jnp.ones((2, 61), dtype=jnp.float32)
     candidate = np.asarray(policy.candidate_actions(observations, generation=0))
     base = np.asarray(policy.base_actions(observations))
+    source_before = np.asarray(policy.source_actions(observations))
     np.testing.assert_allclose(candidate.mean(axis=0), base[0], atol=2.0e-6)
     before = policy.output_parameters()
     policy.update(np.asarray([1.0, 0.0], dtype=np.float32), generation=0)
@@ -153,6 +154,8 @@ def test_output_layer_policy_is_antithetic_and_updates(tmp_path: Path) -> None:
     assert policy.trainable_parameter_count == 1_806
     assert not np.array_equal(before[0], after[0])
     assert not np.array_equal(before[1], after[1])
+    np.testing.assert_array_equal(policy.source_actions(observations), source_before)
+    assert not np.array_equal(policy.base_actions(observations), source_before)
 
 
 def test_output_layer_checkpoint_state_round_trips_scalar_optimizer_leaves(

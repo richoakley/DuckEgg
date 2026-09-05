@@ -260,6 +260,93 @@ class WedgeFootProfile:
         return self.base_profile.actuator_lag_steps
 
 
+@dataclass(frozen=True)
+class TrunkComShiftProfile:
+    """A fixed hidden shift of the trunk's local center of mass."""
+
+    name: str
+    base_profile: DeploymentProfile
+    offset_m: tuple[float, float, float]
+
+    def __post_init__(self) -> None:
+        if not self.name:
+            raise ValueError("Trunk CoM profile name cannot be empty")
+        if len(self.offset_m) != 3 or not all(
+            math.isfinite(value) for value in self.offset_m
+        ):
+            raise ValueError("Trunk CoM offset must contain three finite values")
+        if not 0.0 < math.sqrt(sum(value * value for value in self.offset_m)) <= 0.04:
+            raise ValueError("Trunk CoM shift magnitude must be in (0, 0.04] metres")
+
+    def canonical_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "base_profile": self.base_profile.canonical_dict(),
+            "body": "trunk_base",
+            "offset_m": list(self.offset_m),
+            "operation": "add_to_seeded_startup_body_ipos",
+            "body_mass_kg_changed": False,
+            "body_inertia_tensor_changed": False,
+            "body_inertial_position_changed": True,
+            "hidden_from_actor": True,
+        }
+
+    @property
+    def sha256(self) -> str:
+        payload = json.dumps(
+            self.canonical_dict(), sort_keys=True, separators=(",", ":")
+        ).encode()
+        return hashlib.sha256(payload).hexdigest()
+
+    @property
+    def actuator_lag_steps(self) -> int:
+        return self.base_profile.actuator_lag_steps
+
+
+@dataclass(frozen=True)
+class TrunkPayloadProfile:
+    """A fixed hidden payload distributed like the seeded trunk inertia."""
+
+    name: str
+    base_profile: DeploymentProfile
+    added_mass_kg: float
+
+    def __post_init__(self) -> None:
+        if not self.name:
+            raise ValueError("Trunk payload profile name cannot be empty")
+        if not math.isfinite(self.added_mass_kg) or not (
+            0.0 < self.added_mass_kg <= 0.25
+        ):
+            raise ValueError("Trunk payload mass must be in (0, 0.25] kilograms")
+
+    def canonical_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "base_profile": self.base_profile.canonical_dict(),
+            "body": "trunk_base",
+            "added_mass_kg": self.added_mass_kg,
+            "operation": "add_to_seeded_startup_mass_and_scale_inertia",
+            "payload_inertia_model": (
+                "uniform-density-scale-of-seeded-trunk-pseudo-inertia"
+            ),
+            "body_mass_kg_changed": True,
+            "body_inertia_tensor_changed": True,
+            "body_inertial_position_changed": False,
+            "hidden_from_actor": True,
+        }
+
+    @property
+    def sha256(self) -> str:
+        payload = json.dumps(
+            self.canonical_dict(), sort_keys=True, separators=(",", ":")
+        ).encode()
+        return hashlib.sha256(payload).hexdigest()
+
+    @property
+    def actuator_lag_steps(self) -> int:
+        return self.base_profile.actuator_lag_steps
+
+
 type DeploymentConditionProfile = (
     DeploymentProfile
     | AsymmetricActuatorProfile
@@ -267,6 +354,8 @@ type DeploymentConditionProfile = (
     | ReplacementFootProfile
     | PriorityFootMaterialProfile
     | WedgeFootProfile
+    | TrunkComShiftProfile
+    | TrunkPayloadProfile
 )
 
 
@@ -360,7 +449,9 @@ PROFILES.update(
 )
 
 
-def priority_foot_material_profile(slide_friction: float) -> PriorityFootMaterialProfile:
+def priority_foot_material_profile(
+    slide_friction: float,
+) -> PriorityFootMaterialProfile:
     """Build a physically effective fixed-material replacement foot."""
 
     label = str(slide_friction).replace(".", "p")
@@ -379,10 +470,7 @@ PRIORITY_FOOT_MATERIAL_CALIBRATION_PROFILES = tuple(
     priority_foot_material_profile(value) for value in (0.60, 0.35, 0.18, 0.08)
 )
 PROFILES.update(
-    {
-        profile.name: profile
-        for profile in PRIORITY_FOOT_MATERIAL_CALIBRATION_PROFILES
-    }
+    {profile.name: profile for profile in PRIORITY_FOOT_MATERIAL_CALIBRATION_PROFILES}
 )
 
 
@@ -399,6 +487,45 @@ WEDGE_FOOT_CALIBRATION_PROFILES = tuple(
     wedge_foot_profile(value) for value in (5.0, 10.0, 15.0, 20.0)
 )
 PROFILES.update({profile.name: profile for profile in WEDGE_FOOT_CALIBRATION_PROFILES})
+
+
+def trunk_com_forward_profile(offset_m: float) -> TrunkComShiftProfile:
+    """Build one predeclared forward trunk-CoM calibration condition."""
+
+    millimetres = round(offset_m * 1000)
+    return TrunkComShiftProfile(
+        name=f"trunk-com-forward-{millimetres}mm-v1",
+        base_profile=NOMINAL_PROFILE,
+        offset_m=(offset_m, 0.0, 0.0),
+    )
+
+
+TRUNK_COM_CALIBRATION_PROFILES = tuple(
+    trunk_com_forward_profile(value) for value in (0.010, 0.015, 0.020, 0.025)
+)
+PROFILES.update({profile.name: profile for profile in TRUNK_COM_CALIBRATION_PROFILES})
+
+
+def trunk_payload_profile(added_mass_kg: float) -> TrunkPayloadProfile:
+    """Build one predeclared centrally distributed trunk-payload condition."""
+
+    grams = round(added_mass_kg * 1000)
+    return TrunkPayloadProfile(
+        name=f"trunk-payload-{grams}g-v1",
+        base_profile=NOMINAL_PROFILE,
+        added_mass_kg=added_mass_kg,
+    )
+
+
+# A single modest ladder, frozen before any payload source-policy playback.  The
+# largest member adds 200 g to a roughly 800 g robot and doubles the nominal
+# 199 g trunk mass; this is deliberately bounded rather than an adaptive grid.
+TRUNK_PAYLOAD_CALIBRATION_PROFILES = tuple(
+    trunk_payload_profile(value) for value in (0.050, 0.100, 0.150, 0.200)
+)
+PROFILES.update(
+    {profile.name: profile for profile in TRUNK_PAYLOAD_CALIBRATION_PROFILES}
+)
 
 
 def asymmetric_left_leg_profile(effectiveness: float) -> AsymmetricActuatorProfile:
@@ -477,7 +604,7 @@ class Scenario:
 
 def make_balanced_bank(
     *,
-    profile: DeploymentProfile | AsymmetricActuatorProfile,
+    profile: DeploymentConditionProfile,
     base_seed: int,
     episodes_per_pose: int,
     prefix: str,
@@ -531,6 +658,15 @@ class _FootGeometrySnapshot:
     geom_quat: torch.Tensor
 
 
+@dataclass
+class _TrunkInertialSnapshot:
+    model: Any
+    body_id: int
+    body_ipos: torch.Tensor
+    body_mass: torch.Tensor
+    body_inertia: torch.Tensor
+
+
 class DeploymentState:
     """Restorable baseline for non-accumulating deployment-profile application."""
 
@@ -538,9 +674,11 @@ class DeploymentState:
         self,
         snapshots: list[_ActuatorSnapshot],
         foot_geometry: _FootGeometrySnapshot,
+        trunk_inertial: _TrunkInertialSnapshot,
     ) -> None:
         self._snapshots = snapshots
         self._foot_geometry = foot_geometry
+        self._trunk_inertial = trunk_inertial
 
     @classmethod
     def capture(cls, env: Any) -> DeploymentState:
@@ -601,7 +739,9 @@ class DeploymentState:
         if mesh_ids.shape != (2,) or bool(torch.any(mesh_ids < 0)):
             raise RuntimeError("Foot collision geoms must reference two mesh assets")
         if int(mesh_ids[0].item()) == int(mesh_ids[1].item()):
-            raise RuntimeError("Left and right foot collisions must use distinct meshes")
+            raise RuntimeError(
+                "Left and right foot collisions must use distinct meshes"
+            )
         mesh_ranges: list[tuple[int, int]] = []
         mesh_vertices: list[torch.Tensor] = []
         for mesh_id_tensor in mesh_ids:
@@ -624,7 +764,20 @@ class DeploymentState:
             geom_priority=model.geom_priority[list(geom_ids_tuple)].clone(),
             geom_quat=model.geom_quat[:, list(geom_ids_tuple)].clone(),
         )
-        return cls(snapshots, foot_geometry)
+        body_ids, body_names = robot.find_bodies("trunk_base")
+        if tuple(body_names) != ("trunk_base",):
+            raise RuntimeError("Deployment inertia requires exactly trunk_base")
+        local_body_ids = torch.tensor(body_ids, dtype=torch.long)
+        global_body_ids = robot.indexing.body_ids[local_body_ids]
+        body_id = int(global_body_ids[0].item())
+        trunk_inertial = _TrunkInertialSnapshot(
+            model=model,
+            body_id=body_id,
+            body_ipos=model.body_ipos[:, body_id].clone(),
+            body_mass=model.body_mass[:, body_id].clone(),
+            body_inertia=model.body_inertia[:, body_id].clone(),
+        )
+        return cls(snapshots, foot_geometry, trunk_inertial)
 
     def restore(self) -> None:
         for snapshot in self._snapshots:
@@ -658,6 +811,10 @@ class DeploymentState:
         )
         geometry.model.geom_priority[list(geometry.geom_ids)] = geometry.geom_priority
         geometry.model.geom_quat[:, list(geometry.geom_ids)] = geometry.geom_quat
+        trunk = self._trunk_inertial
+        trunk.model.body_ipos[:, trunk.body_id].copy_(trunk.body_ipos)
+        trunk.model.body_mass[:, trunk.body_id].copy_(trunk.body_mass)
+        trunk.model.body_inertia[:, trunk.body_id].copy_(trunk.body_inertia)
 
     def apply(
         self,
@@ -668,6 +825,8 @@ class DeploymentState:
             | ReplacementFootProfile
             | PriorityFootMaterialProfile
             | WedgeFootProfile
+            | TrunkComShiftProfile
+            | TrunkPayloadProfile
         ),
     ) -> None:
         """Restore the baseline and apply one fixed hidden hardware condition."""
@@ -683,6 +842,8 @@ class DeploymentState:
                     ReplacementFootProfile,
                     PriorityFootMaterialProfile,
                     WedgeFootProfile,
+                    TrunkComShiftProfile,
+                    TrunkPayloadProfile,
                 ),
             )
             else profile
@@ -782,6 +943,27 @@ class DeploymentState:
                 dim=-1,
             )
             geometry.model.geom_quat[:, list(geometry.geom_ids)] = rotated
+
+        if isinstance(profile, TrunkComShiftProfile):
+            trunk = self._trunk_inertial
+            offset = torch.tensor(
+                profile.offset_m,
+                device=trunk.body_ipos.device,
+                dtype=trunk.body_ipos.dtype,
+            )
+            trunk.model.body_ipos[:, trunk.body_id].copy_(trunk.body_ipos + offset)
+
+        if isinstance(profile, TrunkPayloadProfile):
+            trunk = self._trunk_inertial
+            if bool(torch.any(trunk.body_mass <= 0.0)):
+                raise RuntimeError("seeded trunk mass must be positive")
+            scale = (trunk.body_mass + profile.added_mass_kg) / trunk.body_mass
+            trunk.model.body_mass[:, trunk.body_id].copy_(
+                trunk.body_mass + profile.added_mass_kg
+            )
+            trunk.model.body_inertia[:, trunk.body_id].copy_(
+                trunk.body_inertia * scale.unsqueeze(-1)
+            )
 
 
 def bank_sha256(scenarios: tuple[Scenario, ...]) -> str:

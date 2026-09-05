@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from mjlab_microduck.autopatch.campaign import build_campaign_plan
-from mjlab_microduck.autopatch.contracts import PatchCampaign
+from mjlab_microduck.autopatch.contracts import PatchCampaign, ReleaseScope
 from mjlab_microduck.autopatch.foot_proof import (
     make_walking_proof_bank,
     walking_bank_sha256,
@@ -17,8 +17,11 @@ from mjlab_microduck.autopatch.foot_proof import (
 from mjlab_microduck.autopatch.locomotion_objective import (
     LocomotionObjectiveConfig,
     LocomotionTrajectoryAccumulator,
+    ReleaseScopeEpisodeGroup,
     aggregate_candidate_episodes,
+    aggregate_release_scope_candidate_episodes,
     summarize_heldout_episodes,
+    summarize_release_scope_heldout_episodes,
 )
 from mjlab_microduck.autopatch.locomotion_rollout import (
     ProductionWalkingTransport,
@@ -27,6 +30,7 @@ from mjlab_microduck.autopatch.locomotion_rollout import (
 )
 from mjlab_microduck.autopatch.locomotion_trainer import (
     _candidate_is_exportable,
+    validate_release_scope_training,
     validate_walking_campaign,
 )
 from mjlab_microduck.autopatch.registry import PRODUCTION_REGISTRY
@@ -35,6 +39,13 @@ from mjlab_microduck.eggroll.rollout import TaskEnvironment
 
 ROOT = Path(__file__).resolve().parents[1]
 CAMPAIGN_PATH = ROOT / "docs/experiments/campaigns/walking_wedge_autopatch_v1.json"
+V2_CAMPAIGN_PATH = (
+    ROOT / "docs/experiments/campaigns/walking_wedge_autopatch_release_scope_v2.json"
+)
+RELEASE_SCOPE_PATH = (
+    ROOT
+    / "docs/experiments/release_scopes/walking_wedge_gen85_profile_specific_v1.json"
+)
 
 
 def _summary(
@@ -82,6 +93,122 @@ def test_locomotion_objective_never_trades_success_for_tracking() -> None:
     assert fitness[0] > max(fitness[1:])
     assert keys[0][0] == 1.0
     assert metrics["objective/terminal_success_rate"] == 0.25
+
+
+def test_release_scope_fitness_ranks_retention_before_repairs() -> None:
+    source = tuple(
+        _summary(
+            success=(success,),
+            stable=(True,),
+            upright=(1.0,),
+            progress=(1.0,),
+            rmse=(0.1,),
+        )
+        for success in (True, True, False, False)
+    )
+    candidates = tuple(
+        _summary(
+            # Candidate 0 retains both source successes but repairs none.
+            # Candidate 1 repairs both failures but loses one source success.
+            success=success,
+            stable=(True, True),
+            upright=(1.0, 1.0),
+            progress=(1.0, 1.0),
+            rmse=(0.2, 0.1),
+        )
+        for success in ((True, True), (True, False), (False, True), (False, True))
+    )
+    group = ReleaseScopeEpisodeGroup(
+        profile_role="shifted",
+        command_labels=("a", "a", "b", "b"),
+        source_episodes=source,
+        candidate_episodes=candidates,
+    )
+    fitness, keys, metrics = aggregate_release_scope_candidate_episodes(
+        (group,), required_retention_roles=("shifted",)
+    )
+    historical_fitness, _historical_keys, _historical_metrics = (
+        aggregate_candidate_episodes(candidates)
+    )
+    assert keys[0][0:2] == (2.0, 0.0)
+    assert keys[1][0:2] == (1.0, 2.0)
+    assert fitness[0] > fitness[1]
+    # Equal cases and simulator budget: v1 maximizes three total successes and
+    # selects the regression, while v2's explicit retention constraint rejects it.
+    assert historical_fitness[1] > historical_fitness[0]
+    assert metrics["objective/source_success_cases"] == 2.0
+
+
+def test_release_scope_fitness_requires_every_declared_training_profile() -> None:
+    episode = _summary(
+        success=(True,),
+        stable=(True,),
+        upright=(1.0,),
+        progress=(1.0,),
+        rmse=(0.1,),
+    )
+    group = ReleaseScopeEpisodeGroup(
+        profile_role="shifted-a",
+        command_labels=("vx",),
+        source_episodes=(episode,),
+        candidate_episodes=(episode,),
+    )
+    with pytest.raises(ValueError, match="exactly match"):
+        aggregate_release_scope_candidate_episodes(
+            (group,), required_retention_roles=("shifted-a", "shifted-b")
+        )
+
+
+def test_release_scope_heldout_summary_is_behavioral_and_task_return_free() -> None:
+    source = _summary(
+        success=(True,),
+        stable=(True,),
+        upright=(1.0,),
+        progress=(1.0,),
+        rmse=(0.2,),
+    )
+    candidate = _summary(
+        success=(True,),
+        stable=(True,),
+        upright=(1.0,),
+        progress=(1.2,),
+        rmse=(0.1,),
+    )
+    group = ReleaseScopeEpisodeGroup(
+        profile_role="shifted",
+        command_labels=("vx",),
+        source_episodes=(source,),
+        candidate_episodes=(candidate,),
+    )
+    key, metrics = summarize_release_scope_heldout_episodes(
+        (group,), required_retention_roles=("shifted",)
+    )
+    assert key[0] == 1.0
+    assert metrics["objective/retained_source_success_rate"] == 1.0
+    assert "task_return" not in " ".join(
+        name for name in metrics if name.startswith("objective/")
+    )
+
+
+def test_release_scope_training_is_explicitly_versioned_and_attested() -> None:
+    historical = PatchCampaign.from_json(CAMPAIGN_PATH.read_text())
+    campaign = PatchCampaign.from_json(V2_CAMPAIGN_PATH.read_text())
+    scope = ReleaseScope.from_json(RELEASE_SCOPE_PATH.read_text())
+    profile = validate_walking_campaign(
+        campaign=campaign,
+        registry=PRODUCTION_REGISTRY,
+    )
+    validate_release_scope_training(
+        campaign=campaign,
+        release_scope=scope,
+        profile=profile,
+    )
+    with pytest.raises(ValueError, match="historical v1 objective forbids"):
+        validate_release_scope_training(
+            campaign=historical,
+            release_scope=scope,
+            profile=profile,
+        )
 
 
 def test_trajectory_success_matches_runtime_locomotion_predicate() -> None:
@@ -190,6 +317,7 @@ def test_vectorized_rollout_resets_completed_slots_without_reactivating_them(
 
     assert env.reset_calls == [[0]]
     assert result["episode_steps"].tolist() == [1.0, 3.0]
+    assert result["simulator_ticks"].tolist() == [3.0, 3.0]
     assert env.applied_actions[1][0].tolist() == [0.0] * 14
 
 
@@ -219,25 +347,25 @@ def test_production_walking_transport_matches_rust_command_ema() -> None:
     assert third[0, 48].item() == pytest.approx(0.1952)
 
 
-def test_evidence_candidate_must_improve_source_and_retain_nominal() -> None:
+def test_evidence_candidate_must_improve_source_and_retain_release_scope() -> None:
     assert not _candidate_is_exportable(
         campaign_id="walking-proof",
-        nominal_retained=True,
+        release_retained=True,
         improves_source=False,
     )
     assert not _candidate_is_exportable(
         campaign_id="walking-proof",
-        nominal_retained=False,
+        release_retained=False,
         improves_source=True,
     )
     assert _candidate_is_exportable(
         campaign_id="walking-proof",
-        nominal_retained=True,
+        release_retained=True,
         improves_source=True,
     )
     assert _candidate_is_exportable(
         campaign_id="walking-proof-cuda-smoke",
-        nominal_retained=True,
+        release_retained=True,
         improves_source=False,
     )
 
@@ -256,9 +384,7 @@ def test_startup_world_state_broadcasts_one_seeded_robot_identity() -> None:
         )
         return SimpleNamespace(
             num_envs=num_envs,
-            event_manager=SimpleNamespace(
-                domain_randomization_fields=("body_mass",)
-            ),
+            event_manager=SimpleNamespace(domain_randomization_fields=("body_mass",)),
             sim=SimpleNamespace(
                 model=SimpleNamespace(
                     body_mass=torch.full((num_envs, 3), fill),
@@ -300,9 +426,7 @@ def test_heldout_summary_prioritizes_worst_command() -> None:
 
 def test_frozen_walking_campaign_is_eggroll_only_and_hash_bound() -> None:
     campaign = PatchCampaign.from_json(CAMPAIGN_PATH.read_text())
-    profile = validate_walking_campaign(
-        campaign=campaign, registry=PRODUCTION_REGISTRY
-    )
+    profile = validate_walking_campaign(campaign=campaign, registry=PRODUCTION_REGISTRY)
     assert profile.pitch_degrees == 15.0
     bank = make_walking_proof_bank(
         base_seed=20262021,

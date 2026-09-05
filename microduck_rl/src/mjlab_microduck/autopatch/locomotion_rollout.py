@@ -23,6 +23,7 @@ from mjlab_microduck.sim.capability_runtime import (
     reset_registered_scenario,
 )
 
+from .efficiency import PhaseProfiler
 from .foot_proof import WalkingCalibrationCase
 from .locomotion_objective import (
     LocomotionObjectiveConfig,
@@ -70,13 +71,17 @@ def _field_tensor(value: Any) -> torch.Tensor | None:
     return tensor if isinstance(tensor, torch.Tensor) else None
 
 
-def _broadcast_world_tensor(destination: Any, source: torch.Tensor, num_envs: int) -> None:
+def _broadcast_world_tensor(
+    destination: Any, source: torch.Tensor, num_envs: int
+) -> None:
     tensor = _field_tensor(destination)
     if tensor is None or tensor.ndim == 0 or tensor.shape[0] != num_envs:
         raise RuntimeError("startup world field is not expanded per environment")
     if source.shape[0] != 1 or source.shape[1:] != tensor.shape[1:]:
         raise RuntimeError("startup world field shape changed across runtimes")
-    destination[:] = source.to(device=tensor.device, dtype=tensor.dtype).expand_as(tensor)
+    destination[:] = source.to(device=tensor.device, dtype=tensor.dtype).expand_as(
+        tensor
+    )
 
 
 @dataclass(frozen=True)
@@ -124,9 +129,7 @@ class StartupWorldState:
         _broadcast_world_tensor(robot.data.encoder_bias, self.encoder_bias, num_envs)
         if len(robot.actuators) != len(self.actuator_fields):
             raise RuntimeError("startup world actuator layout changed")
-        for actuator, fields in zip(
-            robot.actuators, self.actuator_fields, strict=True
-        ):
+        for actuator, fields in zip(robot.actuators, self.actuator_fields, strict=True):
             for name, value in fields:
                 _broadcast_world_tensor(getattr(actuator, name), value, num_envs)
         if self.imu_misalign_quat is not None:
@@ -240,6 +243,7 @@ def rollout_locomotion_episode(
     action_fn: ActionFunction,
     objective_config: LocomotionObjectiveConfig,
     startup_world: StartupWorldState | None = None,
+    profiler: PhaseProfiler | None = None,
 ) -> dict[str, np.ndarray]:
     """Run one command/seed for all candidates using common random numbers."""
 
@@ -252,13 +256,15 @@ def rollout_locomotion_episode(
         profile_sha256=profile.sha256,
         command=case.command,
     )
-    if startup_world is not None:
-        if startup_world.seed != case.seed:
-            raise ValueError("startup world seed does not match the rollout case")
-        runtime.deployment_state.restore()
-        startup_world.apply(env)
-        runtime.deployment_state = DeploymentState.capture(env)
-    observations = reset_registered_scenario(runtime, scenario, profile)
+    profile_timer = profiler or PhaseProfiler(enabled=False)
+    with profile_timer.measure("environment_reset"):
+        if startup_world is not None:
+            if startup_world.seed != case.seed:
+                raise ValueError("startup world seed does not match the rollout case")
+            runtime.deployment_state.restore()
+            startup_world.apply(env)
+            runtime.deployment_state = DeploymentState.capture(env)
+        observations = reset_registered_scenario(runtime, scenario, profile)
     robot = env.scene["robot"]
     accumulator = LocomotionTrajectoryAccumulator(
         num_envs=env.num_envs,
@@ -275,43 +281,47 @@ def rollout_locomotion_episode(
     transport = ProductionWalkingTransport(
         num_envs=env.num_envs, device=torch.device(env.device)
     )
+    simulator_ticks = 0
     for _step in range(case.horizon_steps):
-        policy_observations = transport.policy_observations(
-            observations["actor"], case.command
-        )
+        with profile_timer.measure("production_transport"):
+            policy_observations = transport.policy_observations(
+                observations["actor"], case.command
+            )
         raw_actions = action_fn(policy_observations)
         if raw_actions.shape != (env.num_envs, 14):
-            raise RuntimeError(
-                f"policy returned {raw_actions.shape}; expected [N, 14]"
-            )
+            raise RuntimeError(f"policy returned {raw_actions.shape}; expected [N, 14]")
         if raw_actions.device != torch.device(env.device):
             raise RuntimeError("policy action device does not match environment")
         if not torch.isfinite(raw_actions).all():
             raise FloatingPointError("policy produced non-finite actions")
-        actions = transport.apply(raw_actions)
-        actions = torch.where(active[:, None], actions, 0.0)
-        observations, rewards, terminated, truncated, _extras = env.step(actions)
-        observations = _with_production_previous_action(observations, raw_actions)
-        state = environment_state_tensors(env)
-        velocity = torch.stack(
-            (
-                robot.data.root_link_lin_vel_b[:, 0],
-                robot.data.root_link_lin_vel_b[:, 1],
-                robot.data.root_link_ang_vel_b[:, 2],
-            ),
-            dim=1,
-        )
-        accumulator.update(
-            root_xy=robot.data.root_link_pos_w[:, :2],
-            velocity=velocity,
-            trunk_height_m=state["trunk_height_m"],
-            upright_cosine=state["upright_cosine"],
-            action_rate_l2=torch.mean(
-                torch.square(actions - previous_actions), dim=1
-            ),
-            reward=rewards,
-            active=active,
-        )
+        with profile_timer.measure("production_transport"):
+            actions = transport.apply(raw_actions)
+            actions = torch.where(active[:, None], actions, 0.0)
+        with profile_timer.measure("mjlab_environment_step"):
+            observations, rewards, terminated, truncated, _extras = env.step(actions)
+        simulator_ticks += 1
+        with profile_timer.measure("objective_accumulation"):
+            observations = _with_production_previous_action(observations, raw_actions)
+            state = environment_state_tensors(env)
+            velocity = torch.stack(
+                (
+                    robot.data.root_link_lin_vel_b[:, 0],
+                    robot.data.root_link_lin_vel_b[:, 1],
+                    robot.data.root_link_ang_vel_b[:, 2],
+                ),
+                dim=1,
+            )
+            accumulator.update(
+                root_xy=robot.data.root_link_pos_w[:, :2],
+                velocity=velocity,
+                trunk_height_m=state["trunk_height_m"],
+                upright_cosine=state["upright_cosine"],
+                action_rate_l2=torch.mean(
+                    torch.square(actions - previous_actions), dim=1
+                ),
+                reward=rewards,
+                active=active,
+            )
         previous_actions = actions
         done = terminated | truncated
         active &= ~done
@@ -322,7 +332,12 @@ def rollout_locomotion_episode(
         if bool(torch.any(done)):
             done_ids = done.nonzero(as_tuple=False).squeeze(-1)
             _reset_completed_slots_without_advancing_observations(env, done_ids)
-    return to_numpy_episode(accumulator.finalize())
+    with profile_timer.measure("objective_finalize"):
+        summary = accumulator.finalize()
+        summary["simulator_ticks"] = torch.full_like(
+            summary["episode_steps"], simulator_ticks
+        )
+        return to_numpy_episode(summary)
 
 
 def evaluate_locomotion_bank(
@@ -333,6 +348,7 @@ def evaluate_locomotion_bank(
     action_fn: ActionFunction,
     objective_config: LocomotionObjectiveConfig,
     startup_worlds: Sequence[StartupWorldState] | None = None,
+    profiler: PhaseProfiler | None = None,
 ) -> list[dict[str, np.ndarray]]:
     if not cases:
         raise ValueError("locomotion bank cannot be empty")
@@ -345,9 +361,8 @@ def evaluate_locomotion_bank(
             profile=profile,
             action_fn=action_fn,
             objective_config=objective_config,
-            startup_world=(
-                None if startup_worlds is None else startup_worlds[index]
-            ),
+            startup_world=(None if startup_worlds is None else startup_worlds[index]),
+            profiler=profiler,
         )
         for index, case in enumerate(cases)
     ]

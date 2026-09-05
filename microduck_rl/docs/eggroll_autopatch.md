@@ -1,7 +1,8 @@
 # EGGROLL Policy Autopatch for MicroDuck
 
-Status: implemented and validated across successful StandUp and walking-policy repairs
-in a production-runtime digital twin on 2026-09-01. No physical robot has been used.
+Status: implemented and validated across successful StandUp and walking-policy repairs,
+including release-aware early stopping, in a production-runtime digital twin on
+2026-09-05. No physical robot has been used.
 
 ## Product claim
 
@@ -14,8 +15,9 @@ objective, and hard release gates, it can:
 3. detect a capability regression using behavior rather than task return;
 4. prepare forward-only EGGROLL post-training over a narrow parameter scope;
 5. account exactly for candidate evaluations, simulator rollouts and compute;
-6. validate a candidate on capability nodes and scheduler-transition edges; and
-7. package it for the existing signed, health-gated, reversible model updater.
+6. stop at the first candidate that passes the complete release gate;
+7. validate a candidate on capability nodes and scheduler-transition edges; and
+8. package it for the existing signed, health-gated, reversible model updater.
 
 StandUp is the first successful patch, not a special architecture. The same evaluator and
 runtime contract now cover every production policy shipped in Pollen Robotics'
@@ -192,6 +194,21 @@ Absolute search cost was 51,200 candidate evaluations, 204,800 optimization roll
 A10G Large. No random-search or generic-ES baseline was run, so this supports an absolute
 efficiency report but no comparative sample-efficiency claim.
 
+The current release-aware workflow no longer assumes that 100 generations are required.
+Three independent seeds each reached a fully qualified profile-specific derivative at
+generation 6, with a median of 3,072 candidate evaluations and 3,078,000 requested
+optimization simulator steps: 6.012% of the historical walking budget. Those jobs retained
+all candidate prefixes but actually completed nine generations, so they are evidence of
+interaction cost to first eligibility, not an early-stop wall-time measurement. A separate
+integrated campaign then trained and qualified candidates in one job and stopped at the
+first complete pass, generation 5, after 2,560 candidate evaluations and 2,565,000
+requested optimization steps, plus 144,000 requested qualification steps. The selected
+candidate passed both production-runtime banks, ONNX parity, profile routing, signed
+activation, exact source fallback and rollback. Its recorded 4,840.9 seconds covers the
+qualification commands only; no comparable end-to-end campaign wall time is claimed.
+Complete accounting and execution boundaries are in
+`docs/experiments/eggroll_autopatch_efficiency_v1.md`.
+
 The confirmation bank contributed 32 new cases with no seed overlap with the first bank.
 The source passed 8/8, 5/8, 6/8 and 4/8 at 0.28, 0.32, 0.36 and 0.40 m/s; DuckEgg passed
 8/8 at every speed. Across both banks, the source passed 47/64 and DuckEgg passed 64/64.
@@ -299,10 +316,10 @@ Expansion to additional affine layers must be explicitly declared and cannot cha
 61D/14D actor API, normalizer or frozen architecture.
 
 The generic code retains the ability to predeclare controlled optimizer comparisons, but
-the walking campaign does not execute one. Its evidence may support an absolute statement
-about how many evaluations and simulator steps EGGROLL used; it cannot support a
-comparative sample-efficiency claim against an unrun baseline. The runner hard-requires
-the real HyperscaleES EGGROLL implementation so a generic ES cannot silently substitute.
+the walking campaign does not execute one. Its evidence supports a controlled comparison
+against DuckEgg's own frozen 51.2-million-step EGGROLL reference, not a comparative claim
+against retraining or an unrun optimizer baseline. The runner hard-requires the real
+HyperscaleES EGGROLL implementation so a generic ES cannot silently substitute.
 
 A release envelope requires exact source and derivative hashes, output-layer-only proof,
 independent ONNX parity below `1e-5`, the production Rust loader probe, all capability-node
@@ -338,7 +355,9 @@ wedge-foot hardware profile. That is a cross-profile robustness result, not auto
 release regression for a profile-specific replacement-foot patch. Generation 85 preserved
 all 47 source successes and repaired all 17 source failures across two seed-disjoint
 wedge-foot banks. The two-bank profile-specific behavioral gate has therefore passed.
-Production routing attestation remains required before the profile-specific release
-envelope can pass: original-foot and unknown robots must retain the exact source bytes.
-Physical transfer and safety validation remain separate gates before any robot deployment
-claim.
+The historical generation-85 derivative still lacks its own production routing
+attestation. The later integrated candidate passed signed profile routing, activation,
+exact source fallback and fresh-process rollback, proving that loop for the current
+release-aware workflow. Original-foot and unknown robots still retain the exact source
+bytes. Physical transfer and safety validation remain separate gates before any robot
+deployment claim.

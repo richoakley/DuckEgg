@@ -1,0 +1,17 @@
+{
+  "evaluation_interval": 5,
+  "plan_id": "walking-wedge-qualification-only-v1",
+  "required_stages": [
+    "release_scope_retention",
+    "onnx_parity",
+    "production_runtime",
+    "independent_confirmation",
+    "profile_routing",
+    "signed_activation_and_rollback"
+  ],
+  "selection_metrics": [
+    "min_command_success_rate",
+    "terminal_success_rate",
+    "nominal_terminal_success_rate"
+  ]
+}

@@ -16,6 +16,8 @@ from mjlab_microduck.eggroll.deployment import (
     PRIORITY_FOOT_MATERIAL_CALIBRATION_PROFILES,
     REPLACEMENT_FOOT_CALIBRATION_PROFILES,
     REPLACEMENT_SOLE_CALIBRATION_PROFILES,
+    TRUNK_COM_CALIBRATION_PROFILES,
+    TRUNK_PAYLOAD_CALIBRATION_PROFILES,
     WEDGE_FOOT_CALIBRATION_PROFILES,
     DeploymentState,
     bank_sha256,
@@ -52,11 +54,14 @@ def fake_environment():
     )
     robot = SimpleNamespace(
         actuators=[actuator],
-        indexing=SimpleNamespace(geom_ids=torch.tensor([0, 1])),
+        indexing=SimpleNamespace(
+            geom_ids=torch.tensor([0, 1]), body_ids=torch.tensor([0])
+        ),
         find_geoms=lambda _pattern: (
             [0, 1],
             ["left_foot_collision", "right_foot_collision"],
         ),
+        find_bodies=lambda _pattern: ([0], ["trunk_base"]),
     )
     model = SimpleNamespace(
         geom_dataid=torch.tensor([[0, 1]]),
@@ -74,9 +79,10 @@ def fake_environment():
         geom_rbound=torch.full((3, 2), 2.0),
         geom_friction=torch.full((3, 2, 3), 0.8),
         geom_priority=torch.zeros(2, dtype=torch.int32),
-        geom_quat=torch.tensor(
-            [[[1.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0]]] * 3
-        ),
+        geom_quat=torch.tensor([[[1.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0]]] * 3),
+        body_ipos=torch.tensor([[[0.004, 0.0, -0.0175]]] * 3),
+        body_mass=torch.full((3, 1), 0.2),
+        body_inertia=torch.tensor([[[1.0e-4, 2.0e-4, 3.0e-4]]] * 3),
     )
     return (
         SimpleNamespace(scene={"robot": robot}, sim=SimpleNamespace(model=model)),
@@ -203,14 +209,68 @@ def test_wedge_foot_rotates_only_contact_frames_and_restores() -> None:
     profile = WEDGE_FOOT_CALIBRATION_PROFILES[1]
     state.apply(profile)
     half_angle = torch.deg2rad(torch.tensor(5.0))
-    expected = torch.tensor(
-        [torch.cos(half_angle), 0.0, torch.sin(half_angle), 0.0]
-    )
+    expected = torch.tensor([torch.cos(half_angle), 0.0, torch.sin(half_angle), 0.0])
     assert torch.allclose(model.geom_quat, expected.expand_as(model.geom_quat))
     state.apply(profile)
     assert torch.allclose(model.geom_quat, expected.expand_as(model.geom_quat))
     state.restore()
     assert torch.equal(model.geom_quat, baseline)
+
+
+def test_trunk_com_shift_is_hidden_fixed_nonaccumulating_and_restorable() -> None:
+    env, actuator = fake_environment()
+    del actuator
+    model = env.sim.model
+    baseline = model.body_ipos.clone()
+    state = DeploymentState.capture(env)
+    profile = TRUNK_COM_CALIBRATION_PROFILES[1]
+
+    state.apply(profile)
+    expected = baseline + torch.tensor([0.015, 0.0, 0.0])
+    assert torch.allclose(model.body_ipos, expected)
+    state.apply(profile)
+    assert torch.allclose(model.body_ipos, expected)
+    state.restore()
+    assert torch.equal(model.body_ipos, baseline)
+    assert profile.canonical_dict()["hidden_from_actor"] is True
+    assert profile.canonical_dict()["body_mass_kg_changed"] is False
+    assert profile.canonical_dict()["body_inertia_tensor_changed"] is False
+    assert profile.canonical_dict()["body_inertial_position_changed"] is True
+    assert len({row.sha256 for row in TRUNK_COM_CALIBRATION_PROFILES}) == 4
+
+
+def test_trunk_payload_is_hidden_physical_nonaccumulating_and_restorable() -> None:
+    env, actuator = fake_environment()
+    del actuator
+    model = env.sim.model
+    baseline_mass = model.body_mass.clone()
+    baseline_inertia = model.body_inertia.clone()
+    baseline_ipos = model.body_ipos.clone()
+    state = DeploymentState.capture(env)
+    profile = TRUNK_PAYLOAD_CALIBRATION_PROFILES[1]
+
+    state.apply(profile)
+    expected_scale = (baseline_mass + 0.1) / baseline_mass
+    assert torch.allclose(model.body_mass, baseline_mass + 0.1)
+    assert torch.allclose(
+        model.body_inertia, baseline_inertia * expected_scale.unsqueeze(-1)
+    )
+    assert torch.equal(model.body_ipos, baseline_ipos)
+    state.apply(profile)
+    assert torch.allclose(model.body_mass, baseline_mass + 0.1)
+    assert torch.allclose(
+        model.body_inertia, baseline_inertia * expected_scale.unsqueeze(-1)
+    )
+    state.restore()
+    assert torch.equal(model.body_mass, baseline_mass)
+    assert torch.equal(model.body_inertia, baseline_inertia)
+    assert torch.equal(model.body_ipos, baseline_ipos)
+    contract = profile.canonical_dict()
+    assert contract["hidden_from_actor"] is True
+    assert contract["body_mass_kg_changed"] is True
+    assert contract["body_inertia_tensor_changed"] is True
+    assert contract["body_inertial_position_changed"] is False
+    assert len({row.sha256 for row in TRUNK_PAYLOAD_CALIBRATION_PROFILES}) == 4
 
 
 def test_runtime_lag_capacity_preserves_subminimum_fixed_lag() -> None:

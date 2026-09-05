@@ -1,0 +1,25 @@
+{
+  "campaign_id": "alpha-walking-wedge-foot-autopatch-v1",
+  "campaign_sha256": "e2ddf3a989c14aad12301ef2e9713390377be5cb52030bfbce58fd30c9ffdd20",
+  "claim_boundary": "campaign-side gate passage is only a qualification trigger; release eligibility requires every predeclared stage in qualification.json",
+  "completed_generations": 100,
+  "cost_to_first_campaign_side_gate_pass": {
+    "candidate_evaluations": 28160,
+    "optimization_world_rollouts": 112640,
+    "requested_optimization_simulator_steps": 28160000,
+    "summed_generation_wall_seconds": 2782.9495577739144
+  },
+  "first_campaign_side_gate_pass_generation": 55,
+  "first_campaign_side_gate_pass_reason": "shifted-terminal-success=pass values=[1.0, 1.0]; shifted-command-coverage=pass values=[1.0, 1.0]; nominal-terminal-retention=pass values=[0.96875, 1.0]",
+  "metrics_sha256": "e5039c394da1300a8796fc72e9cc86c1848eec562e7c337a51d8be7d3a7deb63",
+  "qualification_state_sha256": null,
+  "release_eligible_generation": null,
+  "run_dir": "/private/tmp/eggroll-walking-wedge-train-20260831-v1/run",
+  "schema": "eggroll-autopatch-efficiency-run-summary-v1",
+  "training_cost": {
+    "candidate_evaluations": 51200,
+    "executed_optimization_simulator_steps": null,
+    "optimization_world_rollouts": 204800,
+    "requested_optimization_simulator_steps": 51200000
+  }
+}

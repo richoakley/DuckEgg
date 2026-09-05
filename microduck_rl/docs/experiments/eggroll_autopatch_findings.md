@@ -164,6 +164,18 @@ was run. Complete machine-readable results are in
 `eggroll_walking_autopatch_2026-09.artifacts.json`; the evidence-bound side-by-side video
 is `docs/assets/eggroll_autopatch/walking_wedge_gen85_hero.mp4`.
 
+That fixed 100-generation run is now the frozen historical reference, not the current
+cost to first eligible patch. Under the same policy, profile and final-affine-only scope,
+three independent release-aware seeds each reached full eligibility at generation 6. The
+median requested optimization cost was 3,078,000 simulator steps, 6.012% of the reference.
+Because those training jobs completed nine generations, this is an exact persisted-prefix
+interaction result rather than a wall-time forecast. A subsequent integrated campaign
+stopped at its first full six-stage pass, generation 5, after 2,560 candidate evaluations,
+2,565,000 requested optimization steps and 144,000 requested qualification steps. Its
+4,840.9-second timing covers qualification only, not total campaign wall time. See
+`eggroll_autopatch_efficiency_v1.md` and the machine-readable seed and integrated records
+linked there.
+
 ### Causal conclusion
 
 The original apparent walking success was an evaluator failure: it omitted `robotd`'s
@@ -236,9 +248,11 @@ finite, profile-scoped result required for **zero observed in-profile regression
 two independent banks**. The generated v2 record is
 `walking_wedge_gen85_two_bank_non_regression_v2.json` with SHA-256
 `ffe2011d2c59a186abbcfaa6e128ffdb53cc7781be53e609ef98864162f26879`.
-Release-envelope v3 and signed-updater eligibility remain blocked until genuine production
-routing evidence exists. The original-foot 31/32 result remains a cross-profile diagnostic,
-and neither simulation result is a physical-robot guarantee.
+The historical generation-85 release envelope remains blocked without routing evidence
+for those exact derivative bytes. The later integrated candidate separately passed signed
+profile routing, activation, exact source fallback and fresh-process rollback. The
+original-foot 31/32 generation-85 result remains a cross-profile diagnostic, and neither
+simulation result is a physical-robot guarantee.
 
 Jobs `6a966c1b0718b0f6d890b66e` and `6a966eef0718b0f6d890b6dc` failed before
 rollout because of harness/runtime-snapshot issues. They produced no behavioral cases and

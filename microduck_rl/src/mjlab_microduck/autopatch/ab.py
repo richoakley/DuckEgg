@@ -2,18 +2,23 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from mjlab_microduck.eggroll.deployment import (
-    AsymmetricActuatorProfile,
-    DeploymentProfile,
-)
+from mjlab_microduck.eggroll.deployment import DeploymentConditionProfile
 
-from .evaluate import RuntimeEvaluationRequest, run_runtime_evaluation, sha256_file
 from .registry import AutopatchRegistry
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 @dataclass(frozen=True)
@@ -36,7 +41,7 @@ def run_paired_ab_suite(
     runtime_repo: Path,
     robotd: Path,
     ort_dylib: Path,
-    profiles: tuple[tuple[str, DeploymentProfile | AsymmetricActuatorProfile], ...],
+    profiles: tuple[tuple[str, DeploymentConditionProfile], ...],
     cases: tuple[ABCase, ...],
     output_dir: Path,
     device: str = "cpu",
@@ -45,6 +50,8 @@ def run_paired_ab_suite(
     max_attempts: int = 2,
 ) -> dict[str, Any]:
     """Evaluate exact paired banks; source/adapted differ only in one runtime slot."""
+
+    from .evaluate import RuntimeEvaluationRequest, run_runtime_evaluation
 
     if output_dir.exists() and any(output_dir.iterdir()):
         raise FileExistsError(f"output directory is not empty: {output_dir}")
@@ -109,7 +116,7 @@ def run_paired_ab_suite(
                     "manifest": str(
                         (run_dir / "manifest.json").relative_to(output_dir)
                     ),
-                    "manifest_sha256": sha256_file(run_dir / "manifest.json"),
+                    "manifest_sha256": _sha256_file(run_dir / "manifest.json"),
                     "policy_sha256": record["artifact"]["evaluated_sha256"],
                     "terminal_success": bool(record["result"]["terminal_success"]),
                     "result": record["result"],
@@ -141,7 +148,7 @@ def run_paired_ab_suite(
         "claim_scope": "production-runtime digital twin; no physical robot",
         "artifact_id": artifact_id,
         "source_sha256": artifact.expected_sha256,
-        "adapted_sha256": sha256_file(adapted_policy),
+        "adapted_sha256": _sha256_file(adapted_policy),
         "paired_bank": [asdict(case) for case in cases],
         "profiles": [
             {

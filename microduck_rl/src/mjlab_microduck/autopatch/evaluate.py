@@ -37,6 +37,7 @@ from .runtime import (
     capability_events,
     drive_synchronized,
 )
+from .runtime_trace import audit_robotio_write_coverage
 
 
 def sha256_file(path: Path) -> str:
@@ -87,7 +88,7 @@ def audit_runtime_policy_trace(
     max_previous_action_error = 0.0
     consecutive_pairs = 0
     policy_frames = 0
-    post_episode_write_failures = 0
+    applied_ticks: list[int] = []
     incomplete_ticks: list[int] = []
     loaded: dict[Path, Any] = {}
     previous: dict[str, Any] | None = None
@@ -154,6 +155,7 @@ def audit_runtime_policy_trace(
             ),
         )
         if applied.shape == (15,):
+            applied_ticks.append(int(trace["tick"]))
             expected_applied = np.clip(filtered, -np.pi, np.pi)
             max_safety_error = max(
                 max_safety_error,
@@ -172,11 +174,9 @@ def audit_runtime_policy_trace(
                 min(float(np.max(np.abs(target - applied))) for target in body_targets),
             )
         else:
-            # The body closes as soon as its declared horizon lands. robotd may
-            # publish one final computed tick while its write discovers that
-            # closure. It proves observation/inference/filtering but did not
-            # cross RobotIo, so count it and exclude it from applied checks.
-            post_episode_write_failures += 1
+            # Preserve every failed write for the frozen coverage classifier.
+            # It distinguishes a recovered mid-episode transport gap from the
+            # one allowed final tick whose write discovers body closure.
             incomplete_ticks.append(int(trace["tick"]))
 
         if previous is not None and int(trace["tick"]) == int(previous["tick"]) + 1:
@@ -205,13 +205,10 @@ def audit_runtime_policy_trace(
         previous = trace
         policy_frames += 1
 
-    if incomplete_ticks:
-        final_tick = max(int(frame["policy_trace"]["tick"]) for frame in traced)
-        if incomplete_ticks != [final_tick]:
-            raise RuntimeError(
-                "RobotIo write failed before the single allowed post-episode tick: "
-                f"{incomplete_ticks}"
-            )
+    write_coverage = audit_robotio_write_coverage(
+        applied_ticks=applied_ticks,
+        unapplied_ticks=incomplete_ticks,
+    )
 
     errors = {
         "onnx_raw_action": max_action_error,
@@ -229,7 +226,13 @@ def audit_runtime_policy_trace(
         "status": "pass",
         "tolerance": tolerance,
         "captured_policy_frames": policy_frames,
-        "post_episode_write_failures": post_episode_write_failures,
+        "robotio_write_coverage": write_coverage,
+        "recovered_robotio_write_failures": len(
+            write_coverage["recovered_robotio_write_failure_ticks"]
+        ),
+        "post_episode_write_failures": len(
+            write_coverage["post_episode_write_failure_ticks"]
+        ),
         "consecutive_tick_pairs": consecutive_pairs,
         "state_subscription_is_lossy": True,
         "max_abs_error": errors,

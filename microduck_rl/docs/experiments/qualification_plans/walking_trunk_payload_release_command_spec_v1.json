@@ -1,0 +1,115 @@
+{
+  "spec_id": "walking-trunk-payload-production-release-commands-v1",
+  "commands": [
+    {
+      "stage": "release_scope_retention",
+      "argv": [
+        "uv", "run", "--no-sync", "eggroll-autopatch", "qualify-release-stage",
+        "--stage", "release_scope_retention",
+        "--candidate-checkpoint", "{candidate_checkpoint}",
+        "--checkpoint-sha256", "{checkpoint_sha256}",
+        "--generation", "{generation}",
+        "--evidence-directory", "{evidence_directory}",
+        "--result-path", "{result_path}",
+        "--campaign", ".artifacts/input/campaign.json",
+        "--release-scope", ".artifacts/input/release_scope.json",
+        "--runtime-repo", "/work/microduck"
+      ],
+      "result_path": "generation-{generation}/release_scope_retention.json",
+      "timeout_seconds": 120.0,
+      "execution_failure_action": "abort_campaign"
+    },
+    {
+      "stage": "onnx_parity",
+      "argv": [
+        "uv", "run", "--no-sync", "eggroll-autopatch", "qualify-release-stage",
+        "--stage", "onnx_parity",
+        "--candidate-checkpoint", "{candidate_checkpoint}",
+        "--checkpoint-sha256", "{checkpoint_sha256}",
+        "--generation", "{generation}",
+        "--evidence-directory", "{evidence_directory}",
+        "--result-path", "{result_path}",
+        "--campaign", ".artifacts/input/campaign.json",
+        "--release-scope", ".artifacts/input/release_scope.json",
+        "--runtime-repo", "/work/microduck"
+      ],
+      "result_path": "generation-{generation}/onnx_parity.json",
+      "timeout_seconds": 120.0,
+      "execution_failure_action": "abort_campaign"
+    },
+    {
+      "stage": "production_runtime",
+      "argv": [
+        "uv", "run", "--no-sync", "eggroll-autopatch", "qualify-release-stage",
+        "--stage", "production_runtime",
+        "--candidate-checkpoint", "{candidate_checkpoint}",
+        "--checkpoint-sha256", "{checkpoint_sha256}",
+        "--generation", "{generation}",
+        "--evidence-directory", "{evidence_directory}",
+        "--result-path", "{result_path}",
+        "--campaign", ".artifacts/input/campaign.json",
+        "--release-scope", ".artifacts/input/release_scope.json",
+        "--runtime-repo", "/work/microduck",
+        "--source-behavior-reference", "docs/experiments/walking_trunk_payload_source_behavior_v1.json"
+      ],
+      "result_path": "generation-{generation}/production_runtime.json",
+      "timeout_seconds": 7200.0,
+      "execution_failure_action": "abort_campaign"
+    },
+    {
+      "stage": "independent_confirmation",
+      "argv": [
+        "uv", "run", "--no-sync", "eggroll-autopatch", "qualify-release-stage",
+        "--stage", "independent_confirmation",
+        "--candidate-checkpoint", "{candidate_checkpoint}",
+        "--checkpoint-sha256", "{checkpoint_sha256}",
+        "--generation", "{generation}",
+        "--evidence-directory", "{evidence_directory}",
+        "--result-path", "{result_path}",
+        "--campaign", ".artifacts/input/campaign.json",
+        "--release-scope", ".artifacts/input/release_scope.json",
+        "--runtime-repo", "/work/microduck",
+        "--source-behavior-reference", "docs/experiments/walking_trunk_payload_source_behavior_v1.json"
+      ],
+      "result_path": "generation-{generation}/independent_confirmation.json",
+      "timeout_seconds": 7200.0,
+      "execution_failure_action": "abort_campaign"
+    },
+    {
+      "stage": "profile_routing",
+      "argv": [
+        "uv", "run", "--no-sync", "eggroll-autopatch", "qualify-release-stage",
+        "--stage", "profile_routing",
+        "--candidate-checkpoint", "{candidate_checkpoint}",
+        "--checkpoint-sha256", "{checkpoint_sha256}",
+        "--generation", "{generation}",
+        "--evidence-directory", "{evidence_directory}",
+        "--result-path", "{result_path}",
+        "--campaign", ".artifacts/input/campaign.json",
+        "--release-scope", ".artifacts/input/release_scope.json",
+        "--runtime-repo", "/work/microduck"
+      ],
+      "result_path": "generation-{generation}/profile_routing.json",
+      "timeout_seconds": 600.0,
+      "execution_failure_action": "abort_campaign"
+    },
+    {
+      "stage": "signed_activation_and_rollback",
+      "argv": [
+        "uv", "run", "--no-sync", "eggroll-autopatch", "qualify-release-stage",
+        "--stage", "signed_activation_and_rollback",
+        "--candidate-checkpoint", "{candidate_checkpoint}",
+        "--checkpoint-sha256", "{checkpoint_sha256}",
+        "--generation", "{generation}",
+        "--evidence-directory", "{evidence_directory}",
+        "--result-path", "{result_path}",
+        "--campaign", ".artifacts/input/campaign.json",
+        "--release-scope", ".artifacts/input/release_scope.json",
+        "--runtime-repo", "/work/microduck"
+      ],
+      "result_path": "generation-{generation}/signed_activation_and_rollback.json",
+      "timeout_seconds": 600.0,
+      "execution_failure_action": "abort_campaign"
+    }
+  ]
+}

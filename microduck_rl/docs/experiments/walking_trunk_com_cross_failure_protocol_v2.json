@@ -1,0 +1,187 @@
+{
+  "schema": "eggroll-autopatch-cross-failure-protocol-v2",
+  "protocol_id": "alpha-walking-trunk-com-cross-failure-v2",
+  "status": "predeclared-before-restarted-calibration",
+  "amendment": {
+    "prior_protocol_path": "docs/experiments/walking_trunk_com_cross_failure_protocol_v1.json",
+    "prior_protocol_sha256": "ac4261f24253bbf54b5cc62cca1a7ac574553ef9c7ceb42fea409e13dacfa2f3",
+    "timing": "after two byte-identical source-only nominal-case runtime failures and before any complete calibration profile row, condition selection, candidate optimization, or training",
+    "trigger": {
+      "case_id": "calibration-trunk-com-vx-0.40-003",
+      "failed_job_ids": [
+        "6a9aed2d259f8e97255df3cd",
+        "6a9aefb0259f8e97255df46f"
+      ],
+      "failure": "RobotIo writes absent at ticks 234 and 235 of 249 captured policy frames, followed by applied targets at ticks 236 through 248",
+      "applied_target_frames": 247,
+      "captured_policy_frames": 249,
+      "observed_applied_target_coverage": 0.9919678714859438
+    },
+    "change_scope": "runtime-trace transport coverage classification only",
+    "frozen_fields_unchanged": [
+      "source policy bytes and 61-to-14 contract",
+      "condition ladder and selection rule",
+      "all case banks and optimizer seeds",
+      "population, rank, sigma, learning rate, generations, and cost ceilings",
+      "release gates, source retention, routing, fallback, and rollback",
+      "failure-frontier branching disabled"
+    ],
+    "restart_rule": "discard all partial v1 calibration rows and rerun all 160 source-only episodes under v2"
+  },
+  "runtime_trace_gate": {
+    "rule_id": "robotio-applied-target-coverage-v2",
+    "minimum_applied_target_coverage": 0.99,
+    "recovered_mid_episode_write_gaps": "allowed-only-when-a-later-frame-has-applied-targets",
+    "maximum_post_episode_close_ticks": 1
+  },
+  "prerequisite": {
+    "campaign_id": "alpha-walking-wedge-foot-efficiency-seed4-integrated-paired-source-v3",
+    "required_result": "integrated_validation.status == pass",
+    "result_repository": "richoakley/eggroll-autopatch-efficiency-seed4-integrated-bounded-source-a10g-large-20260904-v8",
+    "source_commit": "e59949bea76af683f54b91f3776f283fdd98beb6",
+    "integrated_validation_sha256": "7a90520a12322155640653113859b6593d9dfa1cbc5468d60761275589de7b01",
+    "stop_generation": 5,
+    "requested_optimization_simulator_steps": 2565000,
+    "requested_optimization_simulator_step_ceiling": 5120000
+  },
+  "source": {
+    "artifact_id": "alpha-walking",
+    "policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "actor_widths": [61, 512, 256, 128, 14],
+    "trainable_scope": "final-affine-weight-and-bias",
+    "trainable_parameters": 1806
+  },
+  "condition": {
+    "adapter": "mjlab-trunk-com-shift-profile-v1",
+    "body": "trunk_base",
+    "axis": "local-forward-x",
+    "operation": "add_to_seeded_startup_body_ipos",
+    "hidden_from_actor": true,
+    "body_mass_kg_changed": false,
+    "body_inertia_tensor_changed": false,
+    "body_inertial_position_changed": true,
+    "profiles": [
+      {
+        "name": "trunk-com-forward-10mm-v1",
+        "offset_m": [0.01, 0.0, 0.0],
+        "sha256": "8568c53c164c36f2212f2349c34ae0591dd183fd8133849396a3a17a938571f5"
+      },
+      {
+        "name": "trunk-com-forward-15mm-v1",
+        "offset_m": [0.015, 0.0, 0.0],
+        "sha256": "8f15ad1470b298488ddb6152c84c4d5a64ecbcde6df8871c7a82e239cfa3969b"
+      },
+      {
+        "name": "trunk-com-forward-20mm-v1",
+        "offset_m": [0.02, 0.0, 0.0],
+        "sha256": "9dd8704620618c5b2049fba753d1495f98e65f5ed9fd3135d3accffa56c31e0a"
+      },
+      {
+        "name": "trunk-com-forward-25mm-v1",
+        "offset_m": [0.025, 0.0, 0.0],
+        "sha256": "d87832964580e795cebac7f8bd3df78be97b03861f1df048d60f91b269b1256f"
+      }
+    ]
+  },
+  "calibration": {
+    "source_only": true,
+    "base_seed": 20293001,
+    "prefix": "calibration-trunk-com",
+    "cases": 32,
+    "episodes_per_command": 8,
+    "walking_case_bank_sha256": "7c894327677809d2f5e819aa5cbf0104fa90af9d3ffd2907082f9b91826d9802",
+    "selection_rule": {
+      "nominal_minimum_successes": 31,
+      "shifted_minimum_successes": 16,
+      "shifted_maximum_successes": 28,
+      "minimum_successes_per_command": 2,
+      "order": [
+        "fewest_terminal_successes",
+        "largest_forward_velocity_rmse"
+      ],
+      "task_return_role": "diagnostic-only"
+    },
+    "no_eligible_condition_action": "stop-and-record-negative-result"
+  },
+  "banks": {
+    "selection": {
+      "base_seed": 20393004,
+      "prefix": "selection-trunk-com",
+      "cases": 32,
+      "walking_case_bank_sha256": "8251685f6aa407d982967eabc52b856ef41ea49726eeca520b7771e5c345a0f7"
+    },
+    "nominal_selection": {
+      "base_seed": 20493007,
+      "prefix": "selection-nominal-com",
+      "cases": 32,
+      "walking_case_bank_sha256": "9a7572aa4198eeeecdf1d18df98dc85400b44f275fba9795da83a7dd9067ccdd"
+    },
+    "production_runtime": {
+      "base_seed": 20593010,
+      "prefix": "production-trunk-com",
+      "cases": 32,
+      "walking_case_bank_sha256": "e43a6aecfadfd8acbffa48da850322e58b292f673d785cbc357ddb7adf35eea6"
+    },
+    "independent_confirmation": {
+      "base_seed": 20693013,
+      "prefix": "confirmation-trunk-com",
+      "cases": 32,
+      "walking_case_bank_sha256": "1bca400ec3a78942a44508c6ed3bd9f647b74bead25dfa2bda12492d3c3b4569"
+    },
+    "pairing": "source and candidate use identical case bytes within each bank",
+    "disjointness": "no scenario fingerprint may overlap across calibration, training, selection, production-runtime, or confirmation"
+  },
+  "training": {
+    "algorithm": "hyperscalees-eggroll",
+    "population": 512,
+    "rank": 4,
+    "sigma": 0.015,
+    "learning_rate": 0.003,
+    "generations_limit": 9,
+    "worlds_per_candidate": 4,
+    "optimizer_seeds": [21000001, 22000003, 23000009],
+    "generation_bank_rule": "optimizer_seed + generation_index * 10007",
+    "max_requested_optimization_simulator_steps_per_seed": 5120000,
+    "failure_frontier_branching": "disabled"
+  },
+  "campaign_side_gates": [
+    {
+      "metric": "terminal_success_rate",
+      "comparator": ">=",
+      "threshold": 0.875,
+      "consecutive_passes": 2
+    },
+    {
+      "metric": "min_command_success_rate",
+      "comparator": ">=",
+      "threshold": 0.75,
+      "consecutive_passes": 2
+    },
+    {
+      "metric": "retained_source_success_rate",
+      "comparator": "==",
+      "threshold": 1.0,
+      "consecutive_passes": 1
+    }
+  ],
+  "release_gates": {
+    "required_stages": [
+      "release_scope_retention",
+      "onnx_parity",
+      "production_runtime",
+      "independent_confirmation",
+      "profile_routing",
+      "signed_activation_and_rollback"
+    ],
+    "adapted_successes_per_runtime_bank": 32,
+    "source_success_regressions_per_runtime_bank": 0,
+    "onnx_parity_max_abs_error_exclusive": 0.00001,
+    "unknown_profile_action": "retain-exact-source-bytes"
+  },
+  "claim_boundaries": [
+    "simulation and production-runtime digital-twin evidence only",
+    "no physical-robot evidence",
+    "no general optimizer-superiority claim",
+    "cross-failure generality requires the predeclared multi-seed result"
+  ]
+}

@@ -36,6 +36,27 @@ class LocomotionObjectiveConfig:
             raise ValueError("min_progress_fraction must be in [0, 1]")
 
 
+@dataclass(frozen=True)
+class ReleaseScopeEpisodeGroup:
+    """Matched source/candidate training-only cases for one activation profile."""
+
+    profile_role: str
+    command_labels: tuple[str, ...]
+    source_episodes: tuple[Mapping[str, np.ndarray], ...]
+    candidate_episodes: tuple[Mapping[str, np.ndarray], ...]
+
+    def __post_init__(self) -> None:
+        if not self.profile_role:
+            raise ValueError("release-scope profile role cannot be empty")
+        lengths = {
+            len(self.command_labels),
+            len(self.source_episodes),
+            len(self.candidate_episodes),
+        }
+        if lengths == {0} or len(lengths) != 1:
+            raise ValueError("release-scope source/candidate cases must align")
+
+
 class LocomotionTrajectoryAccumulator:
     """Online vectorized summaries for one command and one candidate population."""
 
@@ -73,9 +94,7 @@ class LocomotionTrajectoryAccumulator:
         self._final_displacement = zeros.clone()
         self._final_height = zeros.clone()
         self._final_upright = zeros.clone()
-        self._terminal_stable = torch.zeros(
-            num_envs, device=device, dtype=torch.bool
-        )
+        self._terminal_stable = torch.zeros(num_envs, device=device, dtype=torch.bool)
 
     def update(
         self,
@@ -134,9 +153,7 @@ class LocomotionTrajectoryAccumulator:
         )
         self._final_height = torch.where(active, trunk_height_m, self._final_height)
         self._final_upright = torch.where(active, upright_cosine, self._final_upright)
-        self._terminal_stable = torch.where(
-            active, stable, self._terminal_stable
-        )
+        self._terminal_stable = torch.where(active, stable, self._terminal_stable)
 
     def finalize(self) -> dict[str, torch.Tensor]:
         steps = self._steps.clamp(min=1)
@@ -226,18 +243,191 @@ def aggregate_candidate_episodes(
         for index in range(population)
     ]
     fitness = lexicographic_ranks(keys)
-    return fitness, keys, {
-        "objective/terminal_success_rate": float(arrays["terminal_success"].mean()),
-        "objective/terminal_stability_rate": float(arrays["terminal_stable"].mean()),
-        "objective/mean_upright_fraction": float(arrays["upright_fraction"].mean()),
-        "objective/mean_survival_fraction": float(arrays["survival_fraction"].mean()),
-        "objective/mean_progress_fraction": float(arrays["progress_fraction"].mean()),
-        "objective/mean_forward_velocity_rmse_mps": float(
-            arrays["forward_velocity_rmse_mps"].mean()
-        ),
-        "diagnostic/mean_task_return": float(arrays["task_return"].mean()),
-        "objective/fitness_unique": float(np.unique(fitness).size),
+    return (
+        fitness,
+        keys,
+        {
+            "objective/terminal_success_rate": float(arrays["terminal_success"].mean()),
+            "objective/terminal_stability_rate": float(
+                arrays["terminal_stable"].mean()
+            ),
+            "objective/mean_upright_fraction": float(arrays["upright_fraction"].mean()),
+            "objective/mean_survival_fraction": float(
+                arrays["survival_fraction"].mean()
+            ),
+            "objective/mean_progress_fraction": float(
+                arrays["progress_fraction"].mean()
+            ),
+            "objective/mean_forward_velocity_rmse_mps": float(
+                arrays["forward_velocity_rmse_mps"].mean()
+            ),
+            "diagnostic/mean_task_return": float(arrays["task_return"].mean()),
+            "objective/fitness_unique": float(np.unique(fitness).size),
+        },
+    )
+
+
+def aggregate_release_scope_candidate_episodes(
+    groups: Sequence[ReleaseScopeEpisodeGroup],
+    *,
+    required_retention_roles: Sequence[str],
+) -> tuple[np.ndarray, list[tuple[float, ...]], dict[str, float]]:
+    """Rank candidates by explicit profile-scoped behavioral release semantics.
+
+    Source-success retention is the first key, followed by repaired source
+    failures.  Continuous quality metrics can therefore never compensate for a
+    lost source success or an unrepaired behavioral failure.
+    """
+
+    if not groups or not required_retention_roles:
+        raise ValueError("release-scope fitness requires profiles and retention roles")
+    roles = tuple(group.profile_role for group in groups)
+    if len(roles) != len(set(roles)):
+        raise ValueError("release-scope fitness profile roles must be unique")
+    if set(roles) != set(required_retention_roles):
+        raise ValueError(
+            "training profiles must exactly match required retention roles"
+        )
+
+    candidate_arrays: list[dict[str, np.ndarray]] = []
+    source_arrays: list[dict[str, np.ndarray]] = []
+    labels: list[str] = []
+    population: int | None = None
+    for group in groups:
+        candidate = _stack_episode_fields(group.candidate_episodes)
+        source = _stack_episode_fields(group.source_episodes)
+        if source["terminal_success"].shape[1] != 1:
+            raise ValueError(
+                "release-scope source cases require one frozen source policy"
+            )
+        group_population = int(candidate["terminal_success"].shape[1])
+        if population is None:
+            population = group_population
+        elif group_population != population:
+            raise ValueError("release-scope profiles must use one candidate population")
+        if (
+            candidate["terminal_success"].shape[0]
+            != source["terminal_success"].shape[0]
+        ):
+            raise ValueError("release-scope source and candidate case counts differ")
+        candidate_arrays.append(candidate)
+        source_arrays.append(source)
+        labels.extend(f"{group.profile_role}:{label}" for label in group.command_labels)
+
+    assert population is not None
+    candidate_values = {
+        name: np.concatenate([arrays[name] for arrays in candidate_arrays], axis=0)
+        for name in candidate_arrays[0]
     }
+    source_success = np.concatenate(
+        [arrays["terminal_success"][:, 0] for arrays in source_arrays]
+    ).astype(bool)
+    candidate_success = candidate_values["terminal_success"].astype(bool)
+    retained = np.logical_and(source_success[:, None], candidate_success)
+    repaired = np.logical_and(~source_success[:, None], candidate_success)
+    retained_count = retained.sum(axis=0)
+    repaired_count = repaired.sum(axis=0)
+
+    unique_labels = sorted(set(labels))
+    command_rates = np.stack(
+        [
+            candidate_success[
+                np.asarray([label == selected for label in labels], dtype=bool)
+            ].mean(axis=0)
+            for selected in unique_labels
+        ],
+        axis=0,
+    )
+    min_command_rate = command_rates.min(axis=0)
+    stable_count = candidate_values["terminal_stable"].sum(axis=0)
+    keys = [
+        (
+            float(retained_count[index]),
+            float(repaired_count[index]),
+            float(min_command_rate[index]),
+            float(stable_count[index]),
+            float(candidate_values["upright_fraction"][:, index].min()),
+            float(candidate_values["progress_fraction"][:, index].min()),
+            float(candidate_values["upright_fraction"][:, index].mean()),
+            float(candidate_values["progress_fraction"][:, index].mean()),
+            -float(candidate_values["forward_velocity_rmse_mps"][:, index].mean()),
+            -float(candidate_values["mean_action_rate_l2"][:, index].mean()),
+        )
+        for index in range(population)
+    ]
+    fitness = lexicographic_ranks(keys)
+    source_success_total = int(source_success.sum())
+    source_failure_total = int((~source_success).sum())
+    return (
+        fitness,
+        keys,
+        {
+            "objective/retained_source_success_rate": float(
+                (retained_count / source_success_total).mean()
+                if source_success_total
+                else 1.0
+            ),
+            "objective/repaired_source_failure_rate": float(
+                (repaired_count / source_failure_total).mean()
+                if source_failure_total
+                else 0.0
+            ),
+            "objective/min_command_success_rate": float(min_command_rate.mean()),
+            "objective/terminal_success_rate": float(candidate_success.mean()),
+            "objective/terminal_stability_rate": float(
+                candidate_values["terminal_stable"].mean()
+            ),
+            "objective/mean_upright_fraction": float(
+                candidate_values["upright_fraction"].mean()
+            ),
+            "objective/mean_progress_fraction": float(
+                candidate_values["progress_fraction"].mean()
+            ),
+            "objective/mean_forward_velocity_rmse_mps": float(
+                candidate_values["forward_velocity_rmse_mps"].mean()
+            ),
+            "diagnostic/mean_task_return": float(
+                candidate_values["task_return"].mean()
+            ),
+            "objective/source_success_cases": float(source_success_total),
+            "objective/source_failure_cases": float(source_failure_total),
+            "objective/fitness_unique": float(np.unique(fitness).size),
+        },
+    )
+
+
+def summarize_release_scope_heldout_episodes(
+    groups: Sequence[ReleaseScopeEpisodeGroup],
+    *,
+    required_retention_roles: Sequence[str],
+) -> tuple[tuple[float, ...], dict[str, float]]:
+    """Summarize one unperturbed checkpoint without changing v1 selection."""
+
+    fitness, keys, aggregate = aggregate_release_scope_candidate_episodes(
+        groups, required_retention_roles=required_retention_roles
+    )
+    if fitness.shape != (1,) or len(keys) != 1:
+        raise ValueError("release-scope held-out evaluation requires one policy")
+    key = keys[0]
+    metrics = {
+        "objective/retained_source_success_rate": 1.0
+        if aggregate["objective/source_success_cases"] == 0.0
+        else key[0] / aggregate["objective/source_success_cases"],
+        "objective/repaired_source_failure_rate": 0.0
+        if aggregate["objective/source_failure_cases"] == 0.0
+        else key[1] / aggregate["objective/source_failure_cases"],
+        "objective/min_command_success_rate": key[2],
+        "objective/terminal_stability_count": key[3],
+        "objective/worst_upright_fraction": key[4],
+        "objective/worst_progress_fraction": key[5],
+        "objective/mean_upright_fraction": key[6],
+        "objective/mean_progress_fraction": key[7],
+        "objective/negative_mean_forward_velocity_rmse": key[8],
+        "objective/negative_mean_action_rate_l2": key[9],
+        "objective/terminal_success_rate": aggregate["objective/terminal_success_rate"],
+        "diagnostic/mean_task_return": aggregate["diagnostic/mean_task_return"],
+    }
+    return key, metrics
 
 
 def summarize_heldout_episodes(
@@ -263,18 +453,12 @@ def summarize_heldout_episodes(
     metrics.update(
         {
             "objective/min_command_success_rate": min(command_rates.values()),
-            "objective/terminal_success_rate": float(
-                values["terminal_success"].mean()
-            ),
+            "objective/terminal_success_rate": float(values["terminal_success"].mean()),
             "objective/terminal_stability_rate": float(
                 values["terminal_stable"].mean()
             ),
-            "objective/mean_upright_fraction": float(
-                values["upright_fraction"].mean()
-            ),
-            "objective/worst_upright_fraction": float(
-                values["upright_fraction"].min()
-            ),
+            "objective/mean_upright_fraction": float(values["upright_fraction"].mean()),
+            "objective/worst_upright_fraction": float(values["upright_fraction"].min()),
             "objective/mean_survival_fraction": float(
                 values["survival_fraction"].mean()
             ),
@@ -304,9 +488,7 @@ def summarize_heldout_episodes(
 
 
 def to_numpy_episode(summary: Mapping[str, torch.Tensor]) -> dict[str, np.ndarray]:
-    return {
-        name: np.asarray(value.detach().cpu()) for name, value in summary.items()
-    }
+    return {name: np.asarray(value.detach().cpu()) for name, value in summary.items()}
 
 
 def objective_definition(config: LocomotionObjectiveConfig) -> dict[str, Any]:
@@ -329,6 +511,44 @@ def objective_definition(config: LocomotionObjectiveConfig) -> dict[str, Any]:
             "negative_mean_forward_velocity_rmse",
             "negative_mean_action_rate_l2",
         ],
+        "registered_task_return": "diagnostic_only",
+        "differentiable": False,
+    }
+
+
+def release_scope_objective_definition(
+    config: LocomotionObjectiveConfig,
+) -> dict[str, Any]:
+    return {
+        "name": "locomotion-release-scope-lexicographic-v2",
+        "success": {
+            "min_upright_cosine": config.min_upright_cosine,
+            "min_trunk_height_m": config.min_trunk_height_m,
+            "min_upright_fraction": config.min_upright_fraction,
+            "min_progress_fraction": config.min_progress_fraction,
+        },
+        "candidate_order": [
+            "retained_source_success_count",
+            "repaired_source_failure_count",
+            "worst_profile_command_success_rate",
+            "terminal_stability_count",
+            "worst_upright_fraction",
+            "worst_progress_fraction",
+            "mean_upright_fraction",
+            "mean_progress_fraction",
+            "negative_mean_forward_velocity_rmse",
+            "negative_mean_action_rate_l2",
+        ],
+        "profile_semantics": {
+            "profile_specific": (
+                "train only the attested activation profile; original and unknown "
+                "profiles retain exact source bytes"
+            ),
+            "multi_profile": (
+                "require source-success retention across every declared activation "
+                "profile"
+            ),
+        },
         "registered_task_return": "diagnostic_only",
         "differentiable": False,
     }

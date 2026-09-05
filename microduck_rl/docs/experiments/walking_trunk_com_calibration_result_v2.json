@@ -1,0 +1,107 @@
+{
+  "schema": "eggroll-autopatch-trunk-com-calibration-result-v2",
+  "status": "negative-result-with-raw-protocol-packaging-defect",
+  "scientific_outcome": "no-eligible-condition",
+  "decision": "stop trunk-CoM branch without optimization and preserve the negative result",
+  "job": {
+    "id": "6a9b0c94259f8e97255dfc52",
+    "hardware": "a10g-large",
+    "result_repository": "richoakley/eggroll-autopatch-trunk-com-calibration-a10g-large-20260904-v9",
+    "source_dataset": "richoakley/eggroll-autopatch-com-calibration-source-20260904-182311",
+    "source_bundle_sha256": "7189fb2dd382bae00b9a5428087b62da83547380cd9d1c6ce3ef2dce49918816",
+    "source_commit": "37a7a2842a459ba1fbe5be0c5e20264cfa2e8904"
+  },
+  "identities": {
+    "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "bank_sha256": "7c894327677809d2f5e819aa5cbf0104fa90af9d3ffd2907082f9b91826d9802",
+    "calibration_manifest_sha256": "fa6c4438c418a653e5d82de4eed04528e7fddd2700d93e039fd17094758983e0",
+    "source_manifest_sha256": "d57d52d58f8a781c3de07a492f346652141027253f062902a485b10318ceee57",
+    "in_job_validation_sha256": "daf45077448fd356be55ba157309b95e9fa4efd2b1bc5a23d6bbc5b9aadd625e",
+    "declared_protocol_sha256": "7897951a1d33c75d5c0805b239272cf1db941f1f444aaf11fd706036a934856f",
+    "bundled_protocol_sha256": "28b3297014755200d613ab55b90a7f8605054b384664065777959261b0c4ca82",
+    "protocol_canonical_sha256": "33c1b761fd1ac9dd6009edfcde6de63960b6d1955cf499235c3fd2738d1f8748"
+  },
+  "protocol_provenance": {
+    "canonical_json_equal": true,
+    "raw_bytes_equal": false,
+    "cause": "the v9 launcher parsed and pretty-printed calibration_protocol.json while recording the original file hash",
+    "impact": "condition semantics, bank identities, outcomes, and costs remain interpretable, but v9 does not satisfy the strengthened exact raw-protocol byte gate",
+    "remediation": "launcher now archives exact protocol bytes and validator requires source_manifest.protocol_sha256 to match the supplied file"
+  },
+  "cost": {
+    "policy_episode_evaluations": 160,
+    "requested_simulator_steps": 40000,
+    "requested_simulated_seconds": 800.0,
+    "candidate_optimization_evaluations": 0,
+    "rejected_runtime_attempts": 0,
+    "wall_seconds": 1913.2813117629998
+  },
+  "profiles": [
+    {
+      "name": "nominal-fixed-median-v1",
+      "successes": 32,
+      "cases": 32,
+      "command_successes": [8, 8, 8, 8],
+      "mean_forward_velocity_rmse_mps": 0.18982161255553365
+    },
+    {
+      "name": "trunk-com-forward-10mm-v1",
+      "successes": 32,
+      "cases": 32,
+      "command_successes": [8, 8, 8, 8],
+      "mean_forward_velocity_rmse_mps": 0.1715824364218861
+    },
+    {
+      "name": "trunk-com-forward-15mm-v1",
+      "successes": 32,
+      "cases": 32,
+      "command_successes": [8, 8, 8, 8],
+      "mean_forward_velocity_rmse_mps": 0.16098197037354112
+    },
+    {
+      "name": "trunk-com-forward-20mm-v1",
+      "successes": 32,
+      "cases": 32,
+      "command_successes": [8, 8, 8, 8],
+      "mean_forward_velocity_rmse_mps": 0.14898025430738926
+    },
+    {
+      "name": "trunk-com-forward-25mm-v1",
+      "successes": 32,
+      "cases": 32,
+      "command_successes": [8, 8, 8, 8],
+      "mean_forward_velocity_rmse_mps": 0.13536413270048797
+    }
+  ],
+  "failed_or_aborted_attempts": [
+    {
+      "job_id": "6a9aed2d259f8e97255df3cd",
+      "hardware": "a10g-large",
+      "outcome": "runtime-trace transport classification failure on nominal case 32",
+      "optimization_evaluations": 0
+    },
+    {
+      "job_id": "6a9aefb0259f8e97255df46f",
+      "hardware": "a10g-large",
+      "outcome": "byte-identical reproduction of the same nominal-case trace failure",
+      "optimization_evaluations": 0
+    },
+    {
+      "job_id": "6a9af9a1259f8e97255df753",
+      "hardware": "a10g-large",
+      "outcome": "cancelled after 39 minutes queued with no simulator logs",
+      "observed_simulator_steps": 0,
+      "optimization_evaluations": 0
+    },
+    {
+      "job_id": "6a9b0301259f8e97255df9e5",
+      "hardware": "a10g-small",
+      "outcome": "host-starvation trace coverage failure at case 130",
+      "requested_source_simulator_steps_through_failed_case": 32500,
+      "complete_case_manifests": 129,
+      "observed_applied_target_coverage": 0.9838709677419355,
+      "optimization_evaluations": 0
+    }
+  ],
+  "claim_boundary": "source-only simulated production-runtime digital-twin calibration; no candidate optimization, physical-robot evidence, payload result, or optimizer comparison"
+}

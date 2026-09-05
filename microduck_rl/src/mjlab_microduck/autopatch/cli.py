@@ -170,6 +170,105 @@ def _parser() -> argparse.ArgumentParser:
     wedge_foot.add_argument("--timeout", type=float, default=45.0)
     wedge_foot.add_argument("--attempts", type=int, default=2)
     wedge_foot.add_argument("--output-dir", type=Path, required=True)
+    trunk_com = sub.add_parser(
+        "calibrate-trunk-com",
+        help="calibrate the fixed forward trunk-CoM ladder without optimization",
+    )
+    trunk_com.add_argument("--runtime-repo", type=Path, required=True)
+    trunk_com.add_argument("--robotd", type=Path, required=True)
+    trunk_com.add_argument("--ort-dylib", type=Path, required=True)
+    trunk_com.add_argument("--base-seed", type=int, default=20293001)
+    trunk_com.add_argument("--device", default="cuda:0")
+    trunk_com.add_argument("--timeout", type=float, default=45.0)
+    trunk_com.add_argument("--attempts", type=int, default=1)
+    trunk_com.add_argument("--output-dir", type=Path, required=True)
+    trunk_com_validation = sub.add_parser(
+        "verify-trunk-com-calibration",
+        help="validate exact source-only trunk-CoM calibration evidence and cost",
+    )
+    trunk_com_validation.add_argument("--manifest", type=Path, required=True)
+    trunk_com_validation.add_argument("--protocol", type=Path, required=True)
+    trunk_com_validation.add_argument("--source-manifest", type=Path, required=True)
+    trunk_com_validation.add_argument("--output", type=Path, required=True)
+    trunk_payload = sub.add_parser(
+        "calibrate-trunk-payload",
+        help="calibrate the fixed trunk-payload ladder without optimization",
+    )
+    trunk_payload.add_argument("--runtime-repo", type=Path, required=True)
+    trunk_payload.add_argument("--robotd", type=Path, required=True)
+    trunk_payload.add_argument("--ort-dylib", type=Path, required=True)
+    trunk_payload.add_argument("--base-seed", type=int, default=20794001)
+    trunk_payload.add_argument("--device", default="cuda:0")
+    trunk_payload.add_argument("--timeout", type=float, default=45.0)
+    trunk_payload.add_argument("--attempts", type=int, default=1)
+    trunk_payload.add_argument("--output-dir", type=Path, required=True)
+    trunk_payload_validation = sub.add_parser(
+        "verify-trunk-payload-calibration",
+        help="validate exact source-only trunk-payload evidence and cost",
+    )
+    trunk_payload_validation.add_argument("--manifest", type=Path, required=True)
+    trunk_payload_validation.add_argument("--protocol", type=Path, required=True)
+    trunk_payload_validation.add_argument("--source-manifest", type=Path, required=True)
+    trunk_payload_validation.add_argument("--output", type=Path, required=True)
+    source_behavior = sub.add_parser(
+        "capture-walking-source-behavior",
+        help="freeze source behavior on disjoint future release banks",
+    )
+    source_behavior.add_argument("--campaign", type=Path, required=True)
+    source_behavior.add_argument("--calibration-validation", type=Path, required=True)
+    source_behavior.add_argument("--source-manifest", type=Path, required=True)
+    source_behavior.add_argument("--runtime-repo", type=Path, required=True)
+    source_behavior.add_argument("--robotd", type=Path, required=True)
+    source_behavior.add_argument("--ort-dylib", type=Path, required=True)
+    source_behavior.add_argument("--output-dir", type=Path, required=True)
+    cross_failure = sub.add_parser(
+        "verify-trunk-com-study",
+        help="validate and aggregate the predeclared three-seed trunk-CoM study",
+    )
+    cross_failure.add_argument("--protocol", type=Path, required=True)
+    cross_failure.add_argument("--calibration-validation", type=Path, required=True)
+    cross_failure.add_argument("--source-behavior-reference", type=Path, required=True)
+    cross_failure.add_argument(
+        "--seed-output-dir", type=Path, action="append", required=True
+    )
+    cross_failure.add_argument(
+        "--max-requested-optimization-steps", type=int, default=5_120_000
+    )
+    cross_failure.add_argument("--output", type=Path, required=True)
+    prepare_cross_failure = sub.add_parser(
+        "prepare-trunk-com-study",
+        help="materialize the calibrated predeclared three-seed contracts",
+    )
+    prepare_cross_failure.add_argument("--base-campaign", type=Path, required=True)
+    prepare_cross_failure.add_argument("--protocol", type=Path, required=True)
+    prepare_cross_failure.add_argument(
+        "--calibration-validation", type=Path, required=True
+    )
+    prepare_cross_failure.add_argument("--output", type=Path, required=True)
+    payload_study = sub.add_parser(
+        "verify-trunk-payload-study",
+        help="validate and aggregate the predeclared payload three-seed study",
+    )
+    payload_study.add_argument("--protocol", type=Path, required=True)
+    payload_study.add_argument("--calibration-validation", type=Path, required=True)
+    payload_study.add_argument("--source-behavior-reference", type=Path, required=True)
+    payload_study.add_argument(
+        "--seed-output-dir", type=Path, action="append", required=True
+    )
+    payload_study.add_argument(
+        "--max-requested-optimization-steps", type=int, default=5_120_000
+    )
+    payload_study.add_argument("--output", type=Path, required=True)
+    prepare_payload_study = sub.add_parser(
+        "prepare-trunk-payload-study",
+        help="materialize the calibrated predeclared payload contracts",
+    )
+    prepare_payload_study.add_argument("--base-campaign", type=Path, required=True)
+    prepare_payload_study.add_argument("--protocol", type=Path, required=True)
+    prepare_payload_study.add_argument(
+        "--calibration-validation", type=Path, required=True
+    )
+    prepare_payload_study.add_argument("--output", type=Path, required=True)
     train_walking = sub.add_parser(
         "train-walking-campaign",
         help="run the frozen walking Autopatch campaign with EGGROLL only",
@@ -179,6 +278,99 @@ def _parser() -> argparse.ArgumentParser:
     train_walking.add_argument("--output-dir", type=Path, required=True)
     train_walking.add_argument("--device", default="cuda:0")
     train_walking.add_argument("--resume", type=Path)
+    train_walking.add_argument(
+        "--release-scope",
+        type=Path,
+        help="required by the versioned release-scope-aware objective",
+    )
+    train_walking.add_argument(
+        "--profile-generation",
+        action="append",
+        type=int,
+        default=[],
+        help="repeat to collect synchronized phase timings; use 0 for baseline",
+    )
+    train_walking.add_argument(
+        "--qualification-plan",
+        type=Path,
+        help="predeclared early-stop plan; requires --qualification-command-spec",
+    )
+    train_walking.add_argument(
+        "--qualification-command-spec",
+        type=Path,
+        help="hashed direct-command backend; requires --qualification-plan",
+    )
+    efficiency_report = sub.add_parser(
+        "efficiency-report",
+        help="summarize an existing campaign without conflating gate triggers and release",
+    )
+    efficiency_report.add_argument("--run-dir", type=Path, required=True)
+    efficiency_report.add_argument("--campaign", type=Path, required=True)
+    efficiency_report.add_argument(
+        "--release-scope",
+        type=Path,
+        help="apply the declared release-scope retention semantics to gate replay",
+    )
+    efficiency_report.add_argument(
+        "--requested-steps-per-world", type=int, required=True
+    )
+    efficiency_report.add_argument("--output", type=Path, required=True)
+    smoke_validation = sub.add_parser(
+        "verify-cuda-smoke-run",
+        help="verify exact accounting and optimizer invariants for a non-evidence smoke",
+    )
+    smoke_validation.add_argument("--run-dir", type=Path, required=True)
+    smoke_validation.add_argument("--campaign", type=Path, required=True)
+    smoke_validation.add_argument("--release-scope", type=Path)
+    smoke_validation.add_argument("--source-manifest", type=Path, required=True)
+    smoke_validation.add_argument(
+        "--expected-candidate-evaluations", type=int, required=True
+    )
+    smoke_validation.add_argument(
+        "--expected-optimization-world-rollouts", type=int, required=True
+    )
+    smoke_validation.add_argument(
+        "--expected-optimization-requested-steps", type=int, required=True
+    )
+    smoke_validation.add_argument(
+        "--expected-total-world-rollouts", type=int, required=True
+    )
+    smoke_validation.add_argument(
+        "--expected-total-requested-steps", type=int, required=True
+    )
+    smoke_validation.add_argument("--output", type=Path, required=True)
+    integrated_validation = sub.add_parser(
+        "verify-integrated-early-stop-run",
+        help="prove one campaign trained, fully qualified, stopped, and exported",
+    )
+    integrated_validation.add_argument("--run-dir", type=Path, required=True)
+    integrated_validation.add_argument("--campaign", type=Path, required=True)
+    integrated_validation.add_argument("--release-scope", type=Path, required=True)
+    integrated_validation.add_argument("--qualification-plan", type=Path, required=True)
+    integrated_validation.add_argument(
+        "--qualification-command-spec", type=Path, required=True
+    )
+    integrated_validation.add_argument("--source-manifest", type=Path, required=True)
+    integrated_validation.add_argument("--selection-record", type=Path, required=True)
+    integrated_validation.add_argument("--output-policy", type=Path, required=True)
+    integrated_validation.add_argument(
+        "--max-requested-optimization-steps", type=int, required=True
+    )
+    integrated_validation.add_argument("--output", type=Path, required=True)
+    qualification_stage = sub.add_parser(
+        "qualify-release-stage",
+        help="run one candidate-bound production qualification stage",
+    )
+    qualification_stage.add_argument("--stage", required=True)
+    qualification_stage.add_argument("--candidate-checkpoint", type=Path, required=True)
+    qualification_stage.add_argument("--checkpoint-sha256", required=True)
+    qualification_stage.add_argument("--generation", type=int, required=True)
+    qualification_stage.add_argument("--evidence-directory", type=Path, required=True)
+    qualification_stage.add_argument("--result-path", type=Path, required=True)
+    qualification_stage.add_argument("--campaign", type=Path, required=True)
+    qualification_stage.add_argument("--release-scope", type=Path, required=True)
+    qualification_stage.add_argument("--runtime-repo", type=Path, required=True)
+    qualification_stage.add_argument("--source-behavior-reference", type=Path)
     paired = sub.add_parser(
         "evaluate-ab",
         help="run a source/derivative paired bank through actual tasks and robotd",
@@ -246,9 +438,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     non_regression.add_argument("--artifact", required=True)
     non_regression.add_argument("--adapted-policy", type=Path, required=True)
-    non_regression.add_argument(
-        "--manifest", type=Path, action="append", required=True
-    )
+    non_regression.add_argument("--manifest", type=Path, action="append", required=True)
     non_regression.add_argument("--release-scope", type=Path, required=True)
     non_regression.add_argument("--output", type=Path, required=True)
     exporting = sub.add_parser(
@@ -267,7 +457,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     args = _parser().parse_args(argv)
     if args.command == "autopatch":
         from .campaign import build_campaign_plan, write_campaign_plan
-        from .contracts import PatchCampaign
+        from .contracts import PatchCampaign, ReleaseScope
 
         campaign = PatchCampaign.from_json(args.campaign.read_text())
         artifact = PRODUCTION_REGISTRY.artifact(campaign.artifact_id)
@@ -450,11 +640,161 @@ def main(argv: Sequence[str] | None = None) -> None:
             timeout_s=args.timeout,
             max_attempts=args.attempts,
         )
+    elif args.command == "calibrate-trunk-com":
+        from .foot_proof import run_trunk_com_calibration
+
+        payload = run_trunk_com_calibration(
+            registry=PRODUCTION_REGISTRY,
+            runtime_repo=args.runtime_repo.resolve(),
+            robotd=args.robotd.resolve(),
+            ort_dylib=args.ort_dylib.resolve(),
+            output_dir=args.output_dir.resolve(),
+            base_seed=args.base_seed,
+            device=args.device,
+            timeout_s=args.timeout,
+            max_attempts=args.attempts,
+        )
+    elif args.command == "verify-trunk-com-calibration":
+        from .foot_proof import validate_trunk_com_calibration
+
+        payload = validate_trunk_com_calibration(
+            manifest_path=args.manifest.resolve(),
+            protocol_path=args.protocol.resolve(),
+            source_manifest_path=args.source_manifest.resolve(),
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    elif args.command == "calibrate-trunk-payload":
+        from .foot_proof import run_trunk_payload_calibration
+
+        payload = run_trunk_payload_calibration(
+            registry=PRODUCTION_REGISTRY,
+            runtime_repo=args.runtime_repo.resolve(),
+            robotd=args.robotd.resolve(),
+            ort_dylib=args.ort_dylib.resolve(),
+            output_dir=args.output_dir.resolve(),
+            base_seed=args.base_seed,
+            device=args.device,
+            timeout_s=args.timeout,
+            max_attempts=args.attempts,
+        )
+    elif args.command == "verify-trunk-payload-calibration":
+        from .foot_proof import validate_trunk_payload_calibration
+
+        payload = validate_trunk_payload_calibration(
+            manifest_path=args.manifest.resolve(),
+            protocol_path=args.protocol.resolve(),
+            source_manifest_path=args.source_manifest.resolve(),
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    elif args.command == "capture-walking-source-behavior":
+        from .source_behavior import capture_walking_source_behavior_reference
+
+        payload = capture_walking_source_behavior_reference(
+            campaign_path=args.campaign.resolve(),
+            calibration_validation_path=args.calibration_validation.resolve(),
+            source_manifest_path=args.source_manifest.resolve(),
+            runtime_repo=args.runtime_repo.resolve(),
+            robotd=args.robotd.resolve(),
+            ort_dylib=args.ort_dylib.resolve(),
+            output_dir=args.output_dir.resolve(),
+        )
+    elif args.command == "verify-trunk-com-study":
+        from .cross_failure_study import (
+            validate_cross_failure_study,
+            write_cross_failure_validation,
+        )
+
+        payload = validate_cross_failure_study(
+            protocol_path=args.protocol.resolve(),
+            calibration_validation_path=args.calibration_validation.resolve(),
+            source_behavior_reference_path=args.source_behavior_reference.resolve(),
+            seed_output_dirs=tuple(path.resolve() for path in args.seed_output_dir),
+            max_requested_optimization_steps=(args.max_requested_optimization_steps),
+        )
+        write_cross_failure_validation(args.output.resolve(), payload)
+    elif args.command == "prepare-trunk-com-study":
+        from .cross_failure_study import build_trunk_com_study_contracts
+
+        payload = build_trunk_com_study_contracts(
+            base_campaign_path=args.base_campaign.resolve(),
+            protocol_path=args.protocol.resolve(),
+            calibration_validation_path=args.calibration_validation.resolve(),
+        )
+        args.output.resolve().parent.mkdir(parents=True, exist_ok=True)
+        args.output.resolve().write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n"
+        )
+    elif args.command == "verify-trunk-payload-study":
+        from .cross_failure_study import (
+            validate_cross_failure_study,
+            write_cross_failure_validation,
+        )
+
+        payload = validate_cross_failure_study(
+            protocol_path=args.protocol.resolve(),
+            calibration_validation_path=args.calibration_validation.resolve(),
+            source_behavior_reference_path=args.source_behavior_reference.resolve(),
+            seed_output_dirs=tuple(path.resolve() for path in args.seed_output_dir),
+            max_requested_optimization_steps=(args.max_requested_optimization_steps),
+        )
+        write_cross_failure_validation(args.output.resolve(), payload)
+    elif args.command == "prepare-trunk-payload-study":
+        from .cross_failure_study import build_trunk_payload_study_contracts
+
+        payload = build_trunk_payload_study_contracts(
+            base_campaign_path=args.base_campaign.resolve(),
+            protocol_path=args.protocol.resolve(),
+            calibration_validation_path=args.calibration_validation.resolve(),
+        )
+        args.output.resolve().parent.mkdir(parents=True, exist_ok=True)
+        args.output.resolve().write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n"
+        )
     elif args.command == "train-walking-campaign":
-        from .contracts import PatchCampaign
+        from .contracts import PatchCampaign, ReleaseScope
         from .locomotion_trainer import run_walking_campaign
+        from .qualification import QualificationPlan
+        from .qualification_command import (
+            CommandQualificationBackend,
+            CommandQualificationSpec,
+        )
 
         campaign = PatchCampaign.from_json(args.campaign.read_text())
+        release_scope = (
+            ReleaseScope.from_json(args.release_scope.read_text())
+            if args.release_scope is not None
+            else None
+        )
+        if (args.qualification_plan is None) != (
+            args.qualification_command_spec is None
+        ):
+            raise SystemExit(
+                "--qualification-plan and --qualification-command-spec are required "
+                "together"
+            )
+        qualification_plan = (
+            None
+            if args.qualification_plan is None
+            else QualificationPlan.from_json(args.qualification_plan.read_text())
+        )
+        qualification_backend = None
+        if qualification_plan is not None:
+            command_spec = CommandQualificationSpec.from_json(
+                args.qualification_command_spec.read_text()
+            )
+            qualification_backend = CommandQualificationBackend(
+                spec=command_spec,
+                plan=qualification_plan,
+                candidate_directory=(
+                    args.output_dir.resolve() / "qualification_candidates"
+                ),
+                evidence_directory=(
+                    args.output_dir.resolve() / "qualification_evidence"
+                ),
+                working_directory=Path.cwd(),
+            )
         run_dir = run_walking_campaign(
             campaign=campaign,
             registry=PRODUCTION_REGISTRY,
@@ -462,6 +802,10 @@ def main(argv: Sequence[str] | None = None) -> None:
             output_dir=args.output_dir.resolve(),
             device=args.device,
             resume=args.resume.resolve() if args.resume else None,
+            profile_generations=tuple(args.profile_generation),
+            release_scope=release_scope,
+            qualification_plan=qualification_plan,
+            qualification_backend=qualification_backend,
         )
         payload = {
             "status": "complete",
@@ -469,6 +813,87 @@ def main(argv: Sequence[str] | None = None) -> None:
             "campaign_sha256": campaign.sha256,
             "run_dir": str(run_dir),
         }
+    elif args.command == "efficiency-report":
+        from .contracts import PatchCampaign, ReleaseScope
+        from .efficiency_study import (
+            summarize_efficiency_run,
+            write_efficiency_summary,
+        )
+
+        campaign = PatchCampaign.from_json(args.campaign.read_text())
+        release_scope = (
+            None
+            if args.release_scope is None
+            else ReleaseScope.from_json(args.release_scope.read_text())
+        )
+        payload = summarize_efficiency_run(
+            run_dir=args.run_dir.resolve(),
+            campaign=campaign,
+            requested_steps_per_world=args.requested_steps_per_world,
+            release_scope=release_scope,
+        )
+        write_efficiency_summary(args.output.resolve(), payload)
+    elif args.command == "verify-cuda-smoke-run":
+        from .smoke_validation import (
+            validate_cuda_smoke_run,
+            write_cuda_smoke_validation,
+        )
+
+        payload = validate_cuda_smoke_run(
+            run_dir=args.run_dir.resolve(),
+            campaign_path=args.campaign.resolve(),
+            release_scope_path=(
+                None if args.release_scope is None else args.release_scope.resolve()
+            ),
+            source_manifest_path=args.source_manifest.resolve(),
+            expected_candidate_evaluations=args.expected_candidate_evaluations,
+            expected_optimization_world_rollouts=(
+                args.expected_optimization_world_rollouts
+            ),
+            expected_optimization_requested_steps=(
+                args.expected_optimization_requested_steps
+            ),
+            expected_total_world_rollouts=args.expected_total_world_rollouts,
+            expected_total_requested_steps=args.expected_total_requested_steps,
+        )
+        write_cuda_smoke_validation(args.output.resolve(), payload)
+    elif args.command == "verify-integrated-early-stop-run":
+        from .integrated_validation import (
+            validate_integrated_early_stop_run,
+            write_integrated_validation,
+        )
+
+        payload = validate_integrated_early_stop_run(
+            run_dir=args.run_dir.resolve(),
+            campaign_path=args.campaign.resolve(),
+            release_scope_path=args.release_scope.resolve(),
+            qualification_plan_path=args.qualification_plan.resolve(),
+            qualification_command_spec_path=(args.qualification_command_spec.resolve()),
+            source_manifest_path=args.source_manifest.resolve(),
+            selection_record_path=args.selection_record.resolve(),
+            output_policy_path=args.output_policy.resolve(),
+            max_requested_optimization_steps=(args.max_requested_optimization_steps),
+        )
+        write_integrated_validation(args.output.resolve(), payload)
+    elif args.command == "qualify-release-stage":
+        from .qualification_runtime import run_qualification_stage
+
+        payload = run_qualification_stage(
+            stage=args.stage,
+            candidate_checkpoint=args.candidate_checkpoint.resolve(),
+            checkpoint_sha256=args.checkpoint_sha256,
+            generation=args.generation,
+            evidence_directory=args.evidence_directory.resolve(),
+            result_path=args.result_path.resolve(),
+            campaign_path=args.campaign.resolve(),
+            release_scope_path=args.release_scope.resolve(),
+            runtime_repo=args.runtime_repo.resolve(),
+            source_behavior_reference_path=(
+                None
+                if args.source_behavior_reference is None
+                else args.source_behavior_reference.resolve()
+            ),
+        )
     elif args.command == "evaluate-ab":
         from mjlab_microduck.eggroll.deployment import PROFILES
 

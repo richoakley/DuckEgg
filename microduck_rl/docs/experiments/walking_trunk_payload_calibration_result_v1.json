@@ -1,0 +1,159 @@
+{
+  "schema": "eggroll-autopatch-trunk-payload-calibration-result-v1",
+  "status": "negative-result",
+  "scientific_outcome": "no-eligible-condition",
+  "decision": "stop the trunk-payload branch without source-behavior preflight or optimization because the frozen calibration prerequisite failed",
+  "cross_failure_generality_established": false,
+  "job": {
+    "id": "6a9b1e16e686246ca69a26b9",
+    "hardware": "a10g-large",
+    "status": "COMPLETED",
+    "scheduling_seconds": 127,
+    "running_seconds": 2151,
+    "total_seconds": 2278,
+    "result_repository": "richoakley/eggroll-autopatch-trunk-payload-calibration-a10g-large-20260904-v3",
+    "result_repository_commit": "3d0416ba78e41614a4d55f98d2389012b4e537a1",
+    "source_dataset": "richoakley/eggroll-autopatch-payload-calibration-source-20260904-193749",
+    "source_dataset_commit": "b8e51a01ae7c95e58de415f15c83128d5af86c03",
+    "source_bundle_sha256": "cc55af7780368b2eac4aca9abb595c99244d02daef76e60b9c1bbf7c9d4334e6",
+    "source_commit": "2533f2e1a21de7fce1902dd1189e685f7cac8375",
+    "downloaded_evidence_file_count": 1121
+  },
+  "identities": {
+    "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "bank_sha256": "0e6863d389a0788cf68e7e6e64162036681123c7e9c4fae6030aad5089fb1316",
+    "calibration_manifest_sha256": "624e4de3d9fd89e4f4f4166e79de16aca74ae6967842f2f99d33616d11c17d0b",
+    "source_manifest_sha256": "fe258966f3867f34502bf65b9491d4468fe72640a72ad664c33ed443c3ef6723",
+    "in_job_validation_sha256": "a60ed1d4c8437c805bda6ae41b5aaab38439a9af27c62f1f7493d8de7c6d8eb5",
+    "independent_validation_sha256": "a60ed1d4c8437c805bda6ae41b5aaab38439a9af27c62f1f7493d8de7c6d8eb5",
+    "protocol_sha256": "b7d170ba802ac41fbce450693b3fb4c077c1b7560df209415d8b60aa94c41172",
+    "protocol_canonical_sha256": "998a32305be31627869dd94504ccdfee03d786a7a85592a91ebe20570b10d6bd"
+  },
+  "protocol_provenance": {
+    "canonical_json_equal": true,
+    "raw_bytes_equal": true,
+    "source_manifest_bound_exact_protocol_bytes": true,
+    "independent_validation_byte_identical_to_in_job_validation": true
+  },
+  "cost": {
+    "policy_episode_evaluations": 160,
+    "requested_simulator_steps": 40000,
+    "requested_simulated_seconds": 800.0,
+    "candidate_optimization_evaluations": 0,
+    "rejected_runtime_attempts": 0,
+    "calibration_wall_seconds": 1896.1477383670008
+  },
+  "selection_rule": {
+    "nominal_minimum_successes": 31,
+    "eligible_payload_successes_inclusive": [
+      16,
+      28
+    ],
+    "minimum_successes_per_command": 2,
+    "tie_break": "fewest total successes, then larger forward-velocity RMSE",
+    "task_return_role": "diagnostic-only"
+  },
+  "profiles": [
+    {
+      "name": "nominal-fixed-median-v1",
+      "sha256": "2b3128025393155590b42fa7a85903d001ff2faba5748c19e95856ef0869b49f",
+      "added_mass_kg": 0.0,
+      "successes": 32,
+      "cases": 32,
+      "command_successes": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "mean_forward_velocity_rmse_mps": 0.19439464528113604,
+      "mean_upright_fraction": 1.0
+    },
+    {
+      "name": "trunk-payload-50g-v1",
+      "sha256": "189ca04eb32c27a9afdb4e2c6723e7c6d40ad4e16a16dc50ced1d0af9a12a1af",
+      "added_mass_kg": 0.05,
+      "successes": 32,
+      "cases": 32,
+      "command_successes": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "mean_forward_velocity_rmse_mps": 0.20036885049194098,
+      "mean_upright_fraction": 1.0
+    },
+    {
+      "name": "trunk-payload-100g-v1",
+      "sha256": "601f9758fa015a20c67ba70c56667d78ec5cda3232183d1490d2894d6d7b73b7",
+      "added_mass_kg": 0.1,
+      "successes": 31,
+      "cases": 32,
+      "command_successes": [
+        8,
+        8,
+        7,
+        8
+      ],
+      "mean_forward_velocity_rmse_mps": 0.21014509908854961,
+      "mean_upright_fraction": 1.0
+    },
+    {
+      "name": "trunk-payload-150g-v1",
+      "sha256": "64551b7aa481608129f0892bb2c8e022cc0166af865cdfac106f83e2d81c00a4",
+      "added_mass_kg": 0.15,
+      "successes": 31,
+      "cases": 32,
+      "command_successes": [
+        8,
+        8,
+        7,
+        8
+      ],
+      "mean_forward_velocity_rmse_mps": 0.2199907610192895,
+      "mean_upright_fraction": 1.0
+    },
+    {
+      "name": "trunk-payload-200g-v1",
+      "sha256": "496ae003c5e8b7bda98ddf6e8809277aaab20e0630c840de80e9f304f681c055",
+      "added_mass_kg": 0.2,
+      "successes": 31,
+      "cases": 32,
+      "command_successes": [
+        8,
+        8,
+        7,
+        8
+      ],
+      "mean_forward_velocity_rmse_mps": 0.22402603086084127,
+      "mean_upright_fraction": 1.0
+    }
+  ],
+  "failed_or_aborted_attempts": [
+    {
+      "job_id": "6a9b1b09259f8e97255e000c",
+      "hardware": "a10g-large",
+      "outcome": "provider-side 401 while mounting the redundant shared reference-policy bucket before container start",
+      "total_seconds": 484,
+      "observed_simulator_steps": 0,
+      "candidate_optimization_evaluations": 0
+    },
+    {
+      "job_id": "6a9b1d42259f8e97255e0072",
+      "hardware": "a10g-large",
+      "outcome": "cancelled while queued because it retained the same redundant mount; replaced before hardware allocation",
+      "observed_simulator_steps": 0,
+      "candidate_optimization_evaluations": 0
+    }
+  ],
+  "downstream_study": {
+    "source_behavior_preflight_launched": false,
+    "optimizer_seeds_launched": 0,
+    "qualification_runs_launched": 0,
+    "requested_optimization_simulator_steps": 0,
+    "reason": "the predeclared condition-frozen prerequisite was not satisfied; extending or retuning the ladder after observing outcomes is prohibited"
+  },
+  "assessment": "The centrally distributed 50-200 g trunk-payload ladder did not expose the broad source-policy failure needed for an adaptation study. Error rose monotonically, but the three heaviest profiles each missed only one of 32 cases and remained fully upright. This is evidence of source robustness to this simulated payload family, not evidence that EGGROLL generalizes across failure types.",
+  "claim_boundary": "source-only simulated production-runtime digital-twin calibration; no candidate optimization, source-behavior release-bank result, three-seed payload result, physical-robot evidence, or general optimizer-superiority claim"
+}

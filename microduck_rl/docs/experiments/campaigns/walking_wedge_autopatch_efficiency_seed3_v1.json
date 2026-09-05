@@ -1,0 +1,101 @@
+{
+  "artifact_id": "alpha-walking",
+  "artifact_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+  "calibration_bank_sha256": "e1150ed24b619160d4cf490720bda3e186c6e154568903c50f71e44566c563c5",
+  "campaign_id": "alpha-walking-wedge-foot-efficiency-seed3-v1",
+  "capability_id": "legged-locomotion",
+  "condition": {
+    "adapter": "mjlab-wedge-foot-profile-v1",
+    "condition_id": "replacement-wedge-foot-pitch-15deg-v1",
+    "description": "A symmetric, hidden 15 degree sagittal wedge applied to both foot collision geoms without changing mass, inertia, observations, or the policy API.",
+    "hidden_from_actor": true,
+    "parameters": [
+      ["profile_name", "replacement-wedge-foot-pitch-15deg-v1"],
+      ["profile_sha256", "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2"],
+      ["pitch_degrees", 15.0]
+    ]
+  },
+  "gates": [
+    {
+      "comparator": ">=",
+      "consecutive_passes": 2,
+      "evaluator": "registered-mjlab-locomotion-v1",
+      "gate_id": "shifted-terminal-success",
+      "metric": "terminal_success_rate",
+      "profile_role": "target",
+      "threshold": 0.875
+    },
+    {
+      "comparator": ">=",
+      "consecutive_passes": 2,
+      "evaluator": "registered-mjlab-locomotion-v1",
+      "gate_id": "shifted-command-coverage",
+      "metric": "min_command_success_rate",
+      "profile_role": "target",
+      "threshold": 0.75
+    },
+    {
+      "comparator": ">=",
+      "consecutive_passes": 2,
+      "evaluator": "registered-mjlab-locomotion-v1",
+      "gate_id": "nominal-terminal-retention",
+      "metric": "terminal_success_rate",
+      "profile_role": "nominal",
+      "threshold": 0.96875
+    },
+    {
+      "comparator": "<=",
+      "consecutive_passes": 1,
+      "evaluator": "independent-onnx-runtime-parity-v1",
+      "gate_id": "onnx-parity",
+      "metric": "max_abs_error",
+      "profile_role": "parity",
+      "threshold": 1e-05
+    },
+    {
+      "comparator": "==",
+      "consecutive_passes": 1,
+      "evaluator": "production-rust-runtime-trace-v1",
+      "gate_id": "runtime-trace",
+      "metric": "passed",
+      "profile_role": "runtime",
+      "threshold": 1.0
+    }
+  ],
+  "held_out_bank_sha256": "9deed06a134abe4f7179cc1ad5bc1a328d057415574552bbb5a731f5f0173093",
+  "objective": {
+    "description": "Within the attested activation profile, retain every training-only source success before repairing source failures; then maximize command coverage, terminal stability and secondary trajectory quality. Task return remains diagnostic only.",
+    "diagnostics": [
+      "task_return_diagnostic",
+      "terminal_success_rate",
+      "mean_action_rate_l2",
+      "nominal_cross_profile_terminal_success_rate"
+    ],
+    "differentiable": false,
+    "evaluator": "registered-mjlab-locomotion-v2",
+    "lexicographic_metrics": [
+      "retained_source_success_count",
+      "repaired_source_failure_count",
+      "worst_profile_command_success_rate",
+      "terminal_stability_count",
+      "worst_upright_fraction",
+      "worst_progress_fraction",
+      "mean_upright_fraction",
+      "mean_progress_fraction",
+      "negative_mean_forward_velocity_rmse",
+      "negative_mean_action_rate_l2"
+    ],
+    "objective_id": "locomotion-release-scope-lexicographic-v2"
+  },
+  "optimizer": {
+    "algorithm": "hyperscalees-eggroll",
+    "generations": 9,
+    "learning_rate": 0.003,
+    "population": 512,
+    "rank": 4,
+    "seed": 20282045,
+    "sigma": 0.015,
+    "trainable_scope": "final-affine-weight-and-bias",
+    "worlds_per_candidate": 4
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "eggroll-autopatch-integrated-campaign-result-record-v1",
+  "status": "pass",
+  "evidence_role": "integrated single-job early-stop proof",
+  "hf_job_id": "6a9a9002259f8e97255ddc10",
+  "hf_hardware_flavor": "a10g-large",
+  "result_repository": "richoakley/eggroll-autopatch-efficiency-seed4-integrated-bounded-source-a10g-large-20260904-v8",
+  "result_url": "https://huggingface.co/richoakley/eggroll-autopatch-efficiency-seed4-integrated-bounded-source-a10g-large-20260904-v8",
+  "source_commit": "e59949bea76af683f54b91f3776f283fdd98beb6",
+  "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+  "campaign_id": "alpha-walking-wedge-foot-efficiency-seed4-integrated-paired-source-v3",
+  "campaign_sha256": "a42dd2b9db14c64d469728be00cfe1a0e92b75b16fd5fb79393e748e859a0c7b",
+  "release_scope_sha256": "4435a7837cedc7f480e961d2f43d5abc3800eeb5d8356aed1b1bc27a1dbcfd00",
+  "qualification_plan_sha256": "8d7758dbd02c5e8148cb05261943e4b5a35eb4a1db09829cd3f196b6fbd52a41",
+  "qualification_command_spec_sha256": "9e2cbf98228ddc46ce2f6875e59118a317c7f05b65e67009d3782e3847ff2bd5",
+  "integrated_validation_sha256": "7a90520a12322155640653113859b6593d9dfa1cbc5468d60761275589de7b01",
+  "qualification_state_sha256": "976b5718abb7e379a7a4e0ed8bbc8d2761241f414ec7ef802789b67308d5f880",
+  "selection_record_sha256": "7da8a0ca68dedf57d5da868e44a2303f48bb6080d0184948dbb42932d9215ae8",
+  "stop_generation": 5,
+  "campaign_generation_limit": 9,
+  "all_prior_attempts_noneligible": true,
+  "requested_optimization_simulator_step_ceiling": 5120000,
+  "requested_optimization_simulator_steps": 2565000,
+  "executed_optimization_simulator_steps": 2564376,
+  "candidate_evaluations": 2560,
+  "qualification": {
+    "requested_simulator_steps": 144000,
+    "executed_simulator_steps": 138263,
+    "world_rollouts": 576,
+    "wall_seconds": 4840.914050522995,
+    "transcripts": 12,
+    "failed_transcripts": 0
+  },
+  "failed_candidates": [
+    {
+      "generation": 1,
+      "stage": "selection",
+      "reason": "shifted terminal success was 31/32"
+    },
+    {
+      "generation": 2,
+      "stage": "selection",
+      "reason": "lost one contemporaneous source success"
+    },
+    {
+      "generation": 3,
+      "stage": "production_runtime",
+      "reason": "lost seven contemporaneous source successes"
+    },
+    {
+      "generation": 4,
+      "stage": "production_runtime",
+      "reason": "lost four contemporaneous source successes"
+    }
+  ],
+  "selected_candidate": {
+    "checkpoint_sha256": "23232690a9c0e8e16df025eedac19b12f4a2837c695f36bd87249425fb07cf8e",
+    "adapted_policy_sha256": "77970bcd949929e982b60c088c3055fe63504b748c43a2b5c496435b9be9c733",
+    "onnx_parity_max_abs_error": 0.00000286102294921875,
+    "production_runtime": {
+      "source_successes": 21,
+      "adapted_successes": 32,
+      "source_success_regressions": 0,
+      "source_failures_repaired": 11
+    },
+    "independent_confirmation": {
+      "source_successes": 22,
+      "adapted_successes": 32,
+      "source_success_regressions": 0,
+      "source_failures_repaired": 10
+    },
+    "profile_routing": "pass",
+    "signed_activation_and_rollback": "pass",
+    "exact_source_fallback_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c"
+  },
+  "source_behavior_rule": {
+    "match_mode": "bounded_failure_count_and_paired_casewise",
+    "historical_failure_count_tolerance": 1,
+    "candidate_acceptance": "32/32 adapted successes and zero contemporaneous source-success regressions on each runtime bank"
+  },
+  "independent_local_validation": {
+    "status": "pass",
+    "byte_identical_to_in_job_validation": true
+  },
+  "claim_boundary": "One integrated CUDA campaign stopped at its first fully qualified candidate in the production-runtime digital twin. This is not physical-robot evidence and is not a general optimizer-superiority claim."
+}

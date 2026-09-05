@@ -1,0 +1,173 @@
+{
+  "schema": "eggroll-autopatch-payload-cross-failure-protocol-v1",
+  "protocol_id": "alpha-walking-trunk-payload-cross-failure-v1",
+  "status": "predeclared-before-calibration",
+  "predeclaration": {
+    "timing": "after the bounded trunk-CoM ladder produced no eligible incident and before any payload source-policy playback, condition selection, candidate optimization, or training",
+    "single_ladder_only": true,
+    "adaptive_extension": "forbidden",
+    "co_m_branch_result": "no-eligible-condition; preserve as a negative result"
+  },
+  "runtime_trace_gate": {
+    "rule_id": "robotio-applied-target-coverage-v2",
+    "minimum_applied_target_coverage": 0.99,
+    "recovered_mid_episode_write_gaps": "allowed-only-when-a-later-frame-has-applied-targets",
+    "maximum_post_episode_close_ticks": 1
+  },
+  "prerequisite": {
+    "campaign_id": "alpha-walking-wedge-foot-efficiency-seed4-integrated-paired-source-v3",
+    "required_result": "integrated_validation.status == pass",
+    "result_repository": "richoakley/eggroll-autopatch-efficiency-seed4-integrated-bounded-source-a10g-large-20260904-v8",
+    "source_commit": "e59949bea76af683f54b91f3776f283fdd98beb6",
+    "integrated_validation_sha256": "7a90520a12322155640653113859b6593d9dfa1cbc5468d60761275589de7b01",
+    "stop_generation": 5,
+    "requested_optimization_simulator_steps": 2565000,
+    "requested_optimization_simulator_step_ceiling": 5120000
+  },
+  "source": {
+    "artifact_id": "alpha-walking",
+    "policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "actor_widths": [61, 512, 256, 128, 14],
+    "trainable_scope": "final-affine-weight-and-bias",
+    "trainable_parameters": 1806
+  },
+  "condition": {
+    "adapter": "mjlab-trunk-payload-profile-v1",
+    "body": "trunk_base",
+    "operation": "add_to_seeded_startup_mass_and_scale_inertia",
+    "payload_inertia_model": "uniform-density-scale-of-seeded-trunk-pseudo-inertia",
+    "physical_basis": {
+      "nominal_robot_mass_kg_approx": 0.8,
+      "nominal_trunk_mass_kg": 0.199224,
+      "largest_added_payload_fraction_of_robot_approx": 0.25,
+      "largest_added_payload_fraction_of_nominal_trunk": 1.0038951150463793
+    },
+    "hidden_from_actor": true,
+    "body_mass_kg_changed": true,
+    "body_inertia_tensor_changed": true,
+    "body_inertial_position_changed": false,
+    "profiles": [
+      {
+        "name": "trunk-payload-50g-v1",
+        "added_mass_kg": 0.05,
+        "sha256": "189ca04eb32c27a9afdb4e2c6723e7c6d40ad4e16a16dc50ced1d0af9a12a1af"
+      },
+      {
+        "name": "trunk-payload-100g-v1",
+        "added_mass_kg": 0.1,
+        "sha256": "601f9758fa015a20c67ba70c56667d78ec5cda3232183d1490d2894d6d7b73b7"
+      },
+      {
+        "name": "trunk-payload-150g-v1",
+        "added_mass_kg": 0.15,
+        "sha256": "64551b7aa481608129f0892bb2c8e022cc0166af865cdfac106f83e2d81c00a4"
+      },
+      {
+        "name": "trunk-payload-200g-v1",
+        "added_mass_kg": 0.2,
+        "sha256": "496ae003c5e8b7bda98ddf6e8809277aaab20e0630c840de80e9f304f681c055"
+      }
+    ]
+  },
+  "calibration": {
+    "source_only": true,
+    "base_seed": 20794001,
+    "prefix": "calibration-trunk-payload",
+    "cases": 32,
+    "episodes_per_command": 8,
+    "walking_case_bank_sha256": "0e6863d389a0788cf68e7e6e64162036681123c7e9c4fae6030aad5089fb1316",
+    "selection_rule": {
+      "nominal_minimum_successes": 31,
+      "shifted_minimum_successes": 16,
+      "shifted_maximum_successes": 28,
+      "minimum_successes_per_command": 2,
+      "order": [
+        "fewest_terminal_successes",
+        "largest_forward_velocity_rmse"
+      ],
+      "task_return_role": "diagnostic-only"
+    },
+    "no_eligible_condition_action": "stop-and-record-negative-result"
+  },
+  "banks": {
+    "selection": {
+      "base_seed": 20894004,
+      "prefix": "selection-trunk-payload",
+      "cases": 32,
+      "walking_case_bank_sha256": "f0f9c6187f67353c551665262830daacb10e871529abca56da6bd8421b25d874"
+    },
+    "nominal_selection": {
+      "base_seed": 20994007,
+      "prefix": "selection-nominal-payload",
+      "cases": 32,
+      "walking_case_bank_sha256": "19f8b87843d26766c563927dbb855fc03f2daebfe1c690d6380f16632e932ffe"
+    },
+    "production_runtime": {
+      "base_seed": 21094010,
+      "prefix": "production-trunk-payload",
+      "cases": 32,
+      "walking_case_bank_sha256": "e4944f8faa5183efdc64d7af100303901c1014f66f8b31767f6384474b7b5db5"
+    },
+    "independent_confirmation": {
+      "base_seed": 21194013,
+      "prefix": "confirmation-trunk-payload",
+      "cases": 32,
+      "walking_case_bank_sha256": "4972cf2b4114194f1a383d3282b42452d3e8ff49883f15db51c9db37c92ed8d0"
+    },
+    "pairing": "source and candidate use identical case bytes within each bank",
+    "disjointness": "no scenario fingerprint may overlap across calibration, training, selection, production-runtime, or confirmation"
+  },
+  "training": {
+    "algorithm": "hyperscalees-eggroll",
+    "population": 512,
+    "rank": 4,
+    "sigma": 0.015,
+    "learning_rate": 0.003,
+    "generations_limit": 9,
+    "worlds_per_candidate": 4,
+    "optimizer_seeds": [24000001, 25000003, 26000009],
+    "generation_bank_rule": "optimizer_seed + generation_index * 10007",
+    "max_requested_optimization_simulator_steps_per_seed": 5120000,
+    "failure_frontier_branching": "disabled"
+  },
+  "campaign_side_gates": [
+    {
+      "metric": "terminal_success_rate",
+      "comparator": ">=",
+      "threshold": 0.875,
+      "consecutive_passes": 2
+    },
+    {
+      "metric": "min_command_success_rate",
+      "comparator": ">=",
+      "threshold": 0.75,
+      "consecutive_passes": 2
+    },
+    {
+      "metric": "retained_source_success_rate",
+      "comparator": "==",
+      "threshold": 1.0,
+      "consecutive_passes": 1
+    }
+  ],
+  "release_gates": {
+    "required_stages": [
+      "release_scope_retention",
+      "onnx_parity",
+      "production_runtime",
+      "independent_confirmation",
+      "profile_routing",
+      "signed_activation_and_rollback"
+    ],
+    "adapted_successes_per_runtime_bank": 32,
+    "source_success_regressions_per_runtime_bank": 0,
+    "onnx_parity_max_abs_error_exclusive": 0.00001,
+    "unknown_profile_action": "retain-exact-source-bytes"
+  },
+  "claim_boundaries": [
+    "simulation and production-runtime digital-twin evidence only",
+    "no physical-robot evidence",
+    "no general optimizer-superiority claim",
+    "cross-failure generality requires the predeclared multi-seed result"
+  ]
+}

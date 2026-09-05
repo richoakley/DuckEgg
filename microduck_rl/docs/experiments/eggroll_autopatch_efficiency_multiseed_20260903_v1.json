@@ -1,0 +1,342 @@
+{
+  "schema": "eggroll-autopatch-efficiency-multiseed-v1",
+  "status": "strong-success-three-of-three-release-eligible",
+  "recorded_at": "2026-09-03",
+  "claim": "Three of three independent frozen seeds produced a release-eligible profile-specific EGGROLL derivative at generation 6. Median requested optimisation simulator cost to the first eligible checkpoint was 3,078,000 steps, 16.634 times lower than the 51,200,000-step reference.",
+  "claim_boundary": "Exact simulation and production-runtime digital-twin evidence for the declared profile and frozen banks; no physical-robot, transfer, fleet, universal non-regression, or comparative-optimizer claim.",
+  "immutable_contract": {
+    "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+    "observations": 61,
+    "actions": 14,
+    "trainable_scope": "final-affine-weight-and-bias-only",
+    "trainable_parameters": 1806,
+    "optimizer": "HyperscaleES EGGROLL",
+    "antithetic_pairs": true,
+    "common_random_numbers": true,
+    "release_scope_sha256": "4435a7837cedc7f480e961d2f43d5abc3800eeb5d8356aed1b1bc27a1dbcfd00",
+    "qualification_plan_sha256": "8d7758dbd02c5e8148cb05261943e4b5a35eb4a1db09829cd3f196b6fbd52a41",
+    "qualification_command_spec_sha256": "e896b926de8335b44d1b2801bbaa444be039021f0fa6e6fd29553ec15acb8da9",
+    "production_bank_sha256": "ba760ae8dcbb6c0b5827ab8c38bcbe6c4f4a5b41bc85864c0447af24f55eff01",
+    "confirmation_bank_sha256": "106a0c05307852fc6c0b05c383ab658ce2c54fef7d161105cdf4ca97c983d307",
+    "onnx_parity_threshold_exclusive": 0.00001,
+    "activation_profile_sha256": "3410b59527e069c993212671ce463ac05183777968a1ed8e15872affb46912a2",
+    "unknown_profile_action": "retain_source"
+  },
+  "reference": {
+    "requested_optimization_simulator_steps": 51200000,
+    "candidate_evaluations": 51200,
+    "world_rollouts": 204800,
+    "historical_executed_optimization_simulator_steps": null,
+    "historical_executed_optimization_simulator_steps_reason": "not persisted by the reference trainer"
+  },
+  "aggregate_result": {
+    "independent_seeds": 3,
+    "release_eligible_seeds": 3,
+    "release_eligible_fraction": 1.0,
+    "first_eligible_generation_by_seed": [
+      6,
+      6,
+      6
+    ],
+    "median_requested_optimization_simulator_steps": 3078000,
+    "worst_requested_optimization_simulator_steps": 3078000,
+    "median_candidate_evaluations": 3072,
+    "median_optimization_world_rollouts_including_training_source_references": 12312,
+    "reference_to_result_efficiency_ratio": 16.634177,
+    "result_fraction_of_reference": 0.0601171875,
+    "requested_optimization_reduction_fraction": 0.9398828125,
+    "median_requested_all_in_steps_to_first_eligibility": 3254000,
+    "median_requested_all_in_efficiency_ratio": 15.734481,
+    "success_condition": "at least two of three seeds release eligible with median requested optimisation simulator steps at or below 5,120,000",
+    "success_condition_met": true
+  },
+  "execution_semantics": {
+    "training_source_commit": "7f28ca702940d18b8e0fc66618440b63ee10f5d5",
+    "qualification_source_commit": "7e427c16cb8acfd09066a47cee7f76b470770e5b",
+    "training_completed_generations": 9,
+    "counterfactual_stop_generation": 6,
+    "integrated_early_stop_executed": false,
+    "explanation": "The immutable nine-generation training jobs used the correct profile-specific fitness but their cheap qualification screen still hard-gated diagnostic nominal adapted behavior. Commit 7e427c1 corrected that release-scope interpretation without changing candidate bytes, training, banks, thresholds, or qualification stages. The first eligible cost is an exact prefix reconstruction from persisted cumulative ledgers plus independently executed, candidate-hash-bound qualification attempts. The original jobs therefore paid through generation 9 and are not presented as having stopped at generation 6.",
+    "qualification_order": "plausible candidates only, in ascending generation order, stopping at the first complete six-stage pass",
+    "selection_data_used_for_training": false,
+    "heldout_or_confirmation_data_used_for_training_or_hyperparameter_choice": false,
+    "task_return_used_for_selection": false
+  },
+  "seeds": [
+    {
+      "ordinal": 1,
+      "seed": 20262031,
+      "campaign_sha256": "8856e98b5539f559f2426fc0a670db3f1bf8701363883091c6f1217ea41df73f",
+      "training_jobs": [
+        "6a9949570718b0f6d8914326",
+        "6a9960a20718b0f6d8914815"
+      ],
+      "training_output_repository": "richoakley/eggroll-autopatch-efficiency-seed1-20260902-v1",
+      "training_output_repository_commit": "baba74a2a97b63158529df2e9836485d53ae6b86",
+      "completed_training": {
+        "generations": 9,
+        "candidate_evaluations": 4608,
+        "optimization_world_rollouts": 18468,
+        "requested_optimization_simulator_steps": 4617000,
+        "executed_optimization_simulator_steps": 4615892,
+        "requested_all_prequalification_simulator_steps": 4777000,
+        "executed_all_prequalification_simulator_steps": 4773874
+      },
+      "first_eligible": {
+        "generation": 6,
+        "checkpoint_sha256": "7ad831186483d6c9eee27264532ec458a286063c8ec935fbbcef1611667c23a5",
+        "adapted_policy_sha256": "111bbfcdc57c51aef61e52b01dcf7ad26eff75a0180a46234fc0cde37796dc68",
+        "candidate_evaluations": 3072,
+        "optimization_world_rollouts": 12312,
+        "requested_optimization_simulator_steps": 3078000,
+        "executed_optimization_simulator_steps": 3077101,
+        "requested_prequalification_simulator_steps": 3190000,
+        "requested_qualification_simulator_steps_including_rejected_attempts": 64000,
+        "executed_qualification_simulator_steps_including_rejected_attempts": 58246,
+        "requested_all_in_simulator_steps": 3254000,
+        "qualification_attempt_world_rollouts": 256,
+        "qualification_attempt_wall_seconds": 5405.21066
+      },
+      "qualification_attempts": [
+        {
+          "generation": 4,
+          "job_id": "6a996c1e259f8e97255da690",
+          "status": "rejected-production-runtime",
+          "adapted_successes": 26,
+          "source_success_regressions": 4,
+          "requested_simulator_steps": 16000,
+          "executed_simulator_steps": 14423
+        },
+        {
+          "generation": 5,
+          "job_id": "6a997376e686246ca699ef8c",
+          "status": "rejected-production-runtime",
+          "adapted_successes": 31,
+          "source_success_regressions": 1,
+          "requested_simulator_steps": 16000,
+          "executed_simulator_steps": 14423
+        },
+        {
+          "generation": 6,
+          "job_id": "6a997fb1e686246ca699f104",
+          "status": "eligible",
+          "output_repository": "richoakley/eggroll-autopatch-efficiency-seed1-g6-qualification-20260903-v1",
+          "output_repository_commit": "c81c52cd18437ac9163352b508256cc1e935adf0",
+          "evidence_files_declared_and_verified": 993,
+          "requested_simulator_steps": 32000,
+          "executed_simulator_steps": 29400,
+          "onnx_max_abs_error": 0.00000286102294921875
+        }
+      ]
+    },
+    {
+      "ordinal": 2,
+      "seed": 20272038,
+      "campaign_sha256": "ecf00adc513a794728a438be3e560b1b8ea0864ac526152d153f51003eefcea0",
+      "training_jobs": [
+        "6a99496a21c5aa7c8364fe64",
+        "6a9960a20718b0f6d8914817"
+      ],
+      "training_output_repository": "richoakley/eggroll-autopatch-efficiency-seed2-20260902-v1",
+      "training_output_repository_commit": "a8099bebe4384db774aeaa812da0e191510cfeaa",
+      "completed_training": {
+        "generations": 9,
+        "candidate_evaluations": 4608,
+        "optimization_world_rollouts": 18468,
+        "requested_optimization_simulator_steps": 4617000,
+        "executed_optimization_simulator_steps": 4616239,
+        "requested_all_prequalification_simulator_steps": 4777000,
+        "executed_all_prequalification_simulator_steps": 4773922
+      },
+      "first_eligible": {
+        "generation": 6,
+        "checkpoint_sha256": "a74dffe8d36a0bc0452d51c41640c9bdcb5c5c40bb8b7bd35df17360e7a042c4",
+        "adapted_policy_sha256": "39bea1b92e2e5a07200f7c590bfb32231b927f006024a870d74ad3b5815239cf",
+        "candidate_evaluations": 3072,
+        "optimization_world_rollouts": 12312,
+        "requested_optimization_simulator_steps": 3078000,
+        "executed_optimization_simulator_steps": 3077239,
+        "requested_prequalification_simulator_steps": 3190000,
+        "requested_qualification_simulator_steps_including_rejected_attempts": 96000,
+        "executed_qualification_simulator_steps_including_rejected_attempts": 87646,
+        "requested_all_in_simulator_steps": 3286000,
+        "qualification_attempt_world_rollouts": 384,
+        "qualification_attempt_wall_seconds": 7736.337081
+      },
+      "qualification_attempts": [
+        {
+          "generation": 2,
+          "job_id": "6a996cc4e686246ca699eefe",
+          "status": "rejected-production-runtime",
+          "adapted_successes": 27,
+          "source_success_regressions": 3,
+          "requested_simulator_steps": 16000,
+          "executed_simulator_steps": 14423
+        },
+        {
+          "generation": 4,
+          "job_id": "6a99741be686246ca699ef9b",
+          "status": "rejected-production-runtime",
+          "adapted_successes": 30,
+          "source_success_regressions": 1,
+          "requested_simulator_steps": 16000,
+          "executed_simulator_steps": 14423
+        },
+        {
+          "generation": 5,
+          "job_id": "6a997fcd259f8e97255daa45",
+          "status": "rejected-independent-confirmation",
+          "adapted_successes": 31,
+          "source_success_regressions": 1,
+          "requested_simulator_steps": 32000,
+          "executed_simulator_steps": 29400
+        },
+        {
+          "generation": 6,
+          "job_id": "6a999362259f8e97255dade0",
+          "status": "eligible",
+          "output_repository": "richoakley/eggroll-autopatch-efficiency-seed2-g6-qualification-20260903-v1",
+          "output_repository_commit": "bad335307750b5733b3995c238cc72d9a42f4842",
+          "evidence_files_declared_and_verified": 993,
+          "requested_simulator_steps": 32000,
+          "executed_simulator_steps": 29400,
+          "onnx_max_abs_error": 0.000003337860107421875
+        }
+      ]
+    },
+    {
+      "ordinal": 3,
+      "seed": 20282045,
+      "campaign_sha256": "f52d18e4ca1c95b83e32c7bf80d708c69de55a7b4dbb530acf1ec339ef1fe273",
+      "training_jobs": [
+        "6a99497d21c5aa7c8364fe66",
+        "6a9960a3a88f45a8aec52017"
+      ],
+      "training_output_repository": "richoakley/eggroll-autopatch-efficiency-seed3-20260902-v1",
+      "training_output_repository_commit": "bc666909a9a3c3787662625252df1ce9f00b22aa",
+      "completed_training": {
+        "generations": 9,
+        "candidate_evaluations": 4608,
+        "optimization_world_rollouts": 18468,
+        "requested_optimization_simulator_steps": 4617000,
+        "executed_optimization_simulator_steps": 4616345,
+        "requested_all_prequalification_simulator_steps": 4777000,
+        "executed_all_prequalification_simulator_steps": 4774489
+      },
+      "first_eligible": {
+        "generation": 6,
+        "checkpoint_sha256": "52a8f90bfbac21fb91c8be5e23ccd0ea2651737d696186ec3d505d1aed964973",
+        "adapted_policy_sha256": "3c65e5699a13caaccb488a90088a11f42f4d4204a13da340adbe950cb369dfc3",
+        "candidate_evaluations": 3072,
+        "optimization_world_rollouts": 12312,
+        "requested_optimization_simulator_steps": 3078000,
+        "executed_optimization_simulator_steps": 3077345,
+        "requested_prequalification_simulator_steps": 3190000,
+        "requested_qualification_simulator_steps_including_rejected_attempts": 64000,
+        "executed_qualification_simulator_steps_including_rejected_attempts": 58800,
+        "requested_all_in_simulator_steps": 3254000,
+        "qualification_attempt_world_rollouts": 256,
+        "qualification_attempt_wall_seconds": 4737.364717
+      },
+      "qualification_attempts": [
+        {
+          "generation": 5,
+          "job_id": "6a996cdc259f8e97255da69c",
+          "status": "rejected-independent-confirmation",
+          "adapted_successes": 30,
+          "source_success_regressions": 2,
+          "requested_simulator_steps": 32000,
+          "executed_simulator_steps": 29400
+        },
+        {
+          "generation": 6,
+          "job_id": "6a997fe9259f8e97255daa47",
+          "status": "eligible",
+          "output_repository": "richoakley/eggroll-autopatch-efficiency-seed3-g6-qualification-20260903-v1",
+          "output_repository_commit": "ae78c00fe3bfae35fb27c8009969189623e3bdbe",
+          "evidence_files_declared_and_verified": 998,
+          "requested_simulator_steps": 32000,
+          "executed_simulator_steps": 29400,
+          "onnx_max_abs_error": 0.0000030994415283203125
+        }
+      ]
+    }
+  ],
+  "common_release_evidence": {
+    "production_runtime": {
+      "platform_device": "linux-cpu",
+      "source_successes": 21,
+      "adapted_successes_by_seed": [
+        32,
+        32,
+        32
+      ],
+      "source_success_regressions_by_seed": [
+        0,
+        0,
+        0
+      ],
+      "requested_simulator_steps_per_attempt": 16000,
+      "executed_simulator_steps_per_attempt": 14423,
+      "all_rust_runtime_traces_passed": true
+    },
+    "independent_confirmation": {
+      "platform_device": "linux-cuda:0",
+      "source_successes": 23,
+      "adapted_successes_by_seed": [
+        32,
+        32,
+        32
+      ],
+      "source_success_regressions_by_seed": [
+        0,
+        0,
+        0
+      ],
+      "requested_simulator_steps_per_attempt": 16000,
+      "executed_simulator_steps_per_attempt": 14977,
+      "all_rust_runtime_traces_passed": true
+    },
+    "profile_routing": "all three candidates selected their exact adapted bytes for the attested profile and exact source bytes for an unknown profile",
+    "signed_activation_and_rollback": "all three candidates passed real-engine signature and artifact verification and fresh-process rollback restored exact source bytes"
+  },
+  "source_behavior_platform_note": {
+    "historical_reference_source_successes": 47,
+    "historical_breakdown": "24 macOS CPU production plus 23 Linux CUDA confirmation",
+    "remote_qualification_source_successes": 44,
+    "remote_breakdown": "21 Linux CPU production plus 23 Linux CUDA confirmation",
+    "interpretation": "The bank cases and terminal-success semantics are unchanged. A negative preflight discovered platform-specific source behavior, so the release evidence sealed exact source-failure case sets separately for each platform/device. No source success in either sealed remote environment regressed. The 44/64 remote count is not represented as the historical 47/64 count."
+  },
+  "cost_and_timing": {
+    "accelerator": "Hugging Face A10G Large",
+    "listed_rate_usd_per_minute_at_execution": 0.025,
+    "exact_billed_cost_available": false,
+    "training_created_to_terminal_upper_proxy_usd": 7.445,
+    "qualification_created_to_output_commit_upper_proxy_usd": 8.585,
+    "core_training_and_candidate_qualification_upper_proxy_usd": 16.03,
+    "qualification_proxy_includes_queue_and_setup": true,
+    "cost_excludes_smokes_and_environment_preflights": true,
+    "warning": "Provider creation-to-output time is not authoritative billed accelerator time; dollar values are explicitly upper proxies, not invoices."
+  },
+  "verification": {
+    "local_test_suite": "294 passed, 1 skipped, 1 warning",
+    "focused_autopatch_ruff_check": "pass",
+    "focused_autopatch_ruff_format_check": "38 files already formatted",
+    "whole_repository_ruff_check": "180 findings outside the clean focused Autopatch scope; not rewritten as unrelated work",
+    "whole_repository_ruff_format_check": "57 files would be reformatted and 108 already formatted; unrelated files were preserved",
+    "git_diff_check": "pass",
+    "seed_qualification_evidence_files_declared_and_verified": [
+      993,
+      993,
+      998
+    ],
+    "generated_checkpoints_remote_artifacts_caches_or_credentials_committed": false,
+    "unrelated_user_artifacts_preserved": true
+  },
+  "not_run": [
+    "population and rank grid because the frozen population-512 rank-4 configuration already met strong success",
+    "failure-frontier branching because exact complete MJLab state replay was not demonstrated",
+    "physical-robot validation"
+  ],
+  "recommendation": "Use the release-scope-aware v2 objective, one-generation cheap screening, ascending candidate-bound six-stage qualification, and stop at the first complete eligible result. Keep failure-frontier branching disabled. Run one integrated end-to-end early-stop campaign before treating the stitched generation-6 prefix as an operational wall-time forecast, and require physical-robot validation before deployment claims."
+}
