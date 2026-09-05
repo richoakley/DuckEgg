@@ -24,15 +24,14 @@ On MicroDuck, DuckEgg has shown that it can:
   all 17 observed source failures while preserving every source success;
 - modify only the final affine layer—**1,806 of 197,774 parameters (0.91%)**—while
   preserving the production `obs[1,61] -> actions[1,14]` ONNX contract; and
-- reach the complete release gate in **3/3 independent walking runs** at a median
-  **3.078 million requested optimization steps**, 16.6x below the frozen
-  51.2-million-step reference.
+- reach the complete release gate in **3/3 independent walking runs**, rejecting promising
+  candidates that regressed source behavior and continuing until the full evidence passed.
 
-A later single integrated campaign rejected four earlier candidates, stopped at its first
-complete pass at generation 5, and used 2.565 million requested optimization steps plus
-144,000 qualification steps. Even counting qualification, that is 2.709 million tracked
-steps—18.9x below the historical run's optimization-only total—without weakening the
-behavioral objective or release gates.
+The release-aware workflow turns the original fixed-budget experiment into a repeatable
+policy-maintenance process: qualify plausible candidates, reject incomplete repairs, and
+stop at the first complete release pass without weakening the behavioral objective or
+release gates. Exact candidate, rollout and simulator-step accounting is retained in the
+evidence below.
 
 All current results are from a production-runtime digital twin; physical-robot validation
 is the next proof.
@@ -385,8 +384,8 @@ DuckEgg already closes the simulated deployment loop end to end: registered task
 61D observation semantics, production Rust scheduling, ONNX loading, filters, safety,
 simulated `RobotIo` writes, identity-bound traces, signed profile routing, activation and
 rollback. Gate-aware stopping has reduced the walking benchmark's requested optimization
-interactions by more than 10x. The next milestones turn that working digital-twin system
-into a broadly deployable product:
+work while replacing a fixed campaign limit with first-eligible release control. The next
+milestones turn that working digital-twin system into a broadly deployable product:
 
 1. **Run the first physical A/B.** Replay the same source, failure, derivative, scoped
    activation and rollback sequence on a MicroDuck with limits and policy identity visible
