@@ -343,6 +343,59 @@ checkout used during development is deliberately excluded. That optional depende
 licensed GPL-3.0-only, so the EGGROLL-enabled runtime environment is also subject to the
 upstream HyperscaleES license; see [PROVENANCE.md](PROVENANCE.md).
 
+### Run an Autopatch job on Hugging Face
+
+The repository includes a launcher for [Hugging Face Jobs](https://huggingface.co/docs/huggingface_hub/guides/jobs).
+Jobs are paid remote compute and require a Hugging Face account with a positive credit
+balance. Authenticate once using the
+[`hf` CLI](https://huggingface.co/docs/huggingface_hub/guides/cli#hf-auth-login), then run
+the one-generation CUDA smoke:
+
+```bash
+cd microduck_rl
+uv sync --extra eggroll
+uv run hf auth login
+git status --short  # must print nothing: the launcher only uploads clean source
+
+uv run python scripts/hf/eggroll_autopatch_hf.py smoke \
+  --policy ../microduck/example_policies/alpha_walking.onnx \
+  --campaign docs/experiments/campaigns/walking_wedge_autopatch_efficiency_seed4_integrated_paired_source_v3.json \
+  --release-scope docs/experiments/release_scopes/walking_wedge_gen85_profile_specific_v1.json \
+  --namespace YOUR_HF_NAMESPACE \
+  --flavor a10g-large \
+  --timeout 1h
+```
+
+The smoke is a non-evidence systems check: it reduces the frozen campaign to one
+generation, verifies CUDA execution and accounting, and writes a validation record. The
+launcher uploads a content-addressed source bundle to a private dataset repository and
+job outputs to a private model repository; it prints both the job ID and artifact URL.
+By default it follows the logs. Add `--detach` to return after submission.
+
+Use `train` instead of `smoke` to execute the full frozen optimization campaign. That
+reproduces the campaign-side search, not the complete release claim by itself. Integrated
+qualification additionally requires both the committed
+[`walking_wedge_release_v1.json`](microduck_rl/docs/experiments/qualification_plans/walking_wedge_release_v1.json)
+plan and
+[`walking_wedge_release_command_spec_v2.json`](microduck_rl/docs/experiments/qualification_plans/walking_wedge_release_command_spec_v2.json)
+command spec. The current launcher binds those stages to the original private,
+content-addressed production-runtime and reference-policy inputs. To reproduce the full
+six-stage release gate in another account, first provide equivalent pinned inputs in an
+accessible Hugging Face bucket and update the launcher's volume bindings; do not substitute
+generated examples for the sealed banks.
+
+If an otherwise valid job reaches its timeout after writing resumable state, restart it
+from the exact uploaded checkpoint:
+
+```bash
+uv run python scripts/hf/resume_eggroll_autopatch_hf.py \
+  --job-id YOUR_TIMED_OUT_JOB_ID \
+  --timeout 2h
+```
+
+The resume helper fails closed unless the original job ended specifically with a timeout
+and all required state artifacts are present.
+
 ### Build and test the robot runtime
 
 Requirements: Rust 1.89+ stable. On macOS:
@@ -377,31 +430,6 @@ uv run eggroll-autopatch evaluate-ab \
 The committed experiment records contain the exact campaign, profile and policy hashes.
 Private sealed-bank artifacts are not silently replaced with generated examples; supply
 the declared bank if reproducing the published metric.
-
-## Next steps
-
-DuckEgg already closes the simulated deployment loop end to end: registered tasks, real
-61D observation semantics, production Rust scheduling, ONNX loading, filters, safety,
-simulated `RobotIo` writes, identity-bound traces, signed profile routing, activation and
-rollback. Gate-aware stopping has reduced the walking benchmark's requested optimization
-work while replacing a fixed campaign limit with first-eligible release control. The next
-milestones turn that working digital-twin system into a broadly deployable product:
-
-1. **Run the first physical A/B.** Replay the same source, failure, derivative, scoped
-   activation and rollback sequence on a MicroDuck with limits and policy identity visible
-   to the operator.
-2. **Connect telemetry to the release loop.** Turn real deployment failures and customer
-   acceptance tests into sealed campaigns, while recording comparable end-to-end latency
-   and accelerator cost.
-3. **Test breadth without manufacturing a win.** Apply the engine to another production
-   policy and an independently motivated incident. The center-of-mass and payload ladders
-   found a robust source policy, so they will not be retuned after observing the result.
-4. **Generalize beyond MicroDuck.** Demonstrate the same forward-only loop on another
-   robot, policy architecture and non-differentiable acceptance test.
-
-The ambition is a system that keeps a fleet's policies improving as hardware, operating
-conditions and customer requirements change—without reopening every original training
-project.
 
 ## License and attribution
 
