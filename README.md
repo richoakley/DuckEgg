@@ -1,54 +1,58 @@
 # DuckEgg
 
-**Deployment-time learning for robot policies, powered by EGGROLL.**
+**Forward-only policy repair for deployed robots, powered by EGGROLL.**
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/c2f7c245-8217-46a1-8d1e-e0ba967cd969" alt="The MicroDuck bipedal robot" width="820">
 </p>
 
-> [!IMPORTANT]
-> DuckEgg is an independent extension built on Pollen Robotics' original
-> [`microduck`](https://github.com/pollen-robotics/microduck) robot runtime and
-> [`microduck_rl`](https://github.com/pollen-robotics/microduck_rl) policy-training
-> repositories. Their complete source is preserved in this monorepo under
-> [`microduck/`](microduck/) and [`microduck_rl/`](microduck_rl/), with the EGGROLL
-> integration layered on top. Both upstream projects are Apache-2.0 licensed. See
-> [PROVENANCE.md](PROVENANCE.md) for the exact source revisions and modification boundary.
-
 **Can a deployed robot policy be repaired against the outcome that actually matters,
 without gradients, without changing its interface, and without rerunning its original
 training pipeline?**
 
-This repository is a working answer. **DuckEgg** takes an existing PPO policy as a sealed
-ONNX artifact, evaluates narrow policy derivatives through the robot's real Rust control
-loop inside its registered MuJoCo environment, and produces a validated, reversible
-policy update against explicit behavioral outcomes.
+**DuckEgg is a working answer.** It starts with a sealed production ONNX policy, evaluates
+narrow derivatives through the robot's real Rust control loop inside its registered MuJoCo
+environment, and releases only a policy that passes explicit behavioral, non-regression,
+runtime, routing and rollback gates.
 
-The result goes well beyond a higher simulation reward. In two controlled MicroDuck
-experiments, DuckEgg optimized hard, non-differentiable deployment outcomes:
+On MicroDuck, DuckEgg has shown that it can:
 
-- a standing policy recovered under hidden power and actuator-delay conditions, improving
+- repair a standing policy under hidden power and actuator-delay conditions, improving
   stable terminal success from **17/32 to 32/32** while retaining **32/32** nominal success;
-- a walking policy adapted to a simulated **15° replacement-foot geometry**, improving
+- adapt a walking policy to a simulated **15° replacement-foot geometry**, improving
   terminal success from **47/64 to 64/64 across two independent sealed banks**, repairing
-  all 17 observed source failures while preserving every source success through
-  MicroDuck's production Rust runtime.
+  all 17 observed source failures while preserving every source success;
+- modify only the final affine layer—**1,806 of 197,774 parameters (0.91%)**—while
+  preserving the production `obs[1,61] -> actions[1,14]` ONNX contract; and
+- reach the complete release gate in **3/3 independent walking runs** at a median
+  **3.078 million requested optimization steps**, 16.6x below the frozen
+  51.2-million-step reference.
 
-Both derivatives preserve the production `obs[1,61] -> actions[1,14]` ONNX contract and
-change only the final affine layer: **1,806 of 197,774 parameters (0.91%)**.
+A later single integrated campaign rejected four earlier candidates, stopped at its first
+complete pass at generation 5, and used 2.565 million requested optimization steps plus
+144,000 qualification steps. Even counting qualification, that is 2.709 million tracked
+steps—18.9x below the historical run's optimization-only total—without weakening the
+behavioral objective or release gates.
 
-The walking workflow now also qualifies and stops candidates against the complete release
-gate instead of assuming a fixed 100-generation search. Three independent seeds reached
-eligibility at generation 6 with a median **3.078 million requested optimization steps**,
-6.012% of the frozen 51.2-million-step reference. A separate integrated campaign stopped
-inside training at its first full pass, generation 5, after **2.565 million requested
-optimization steps**, while preserving the behavioral, runtime, routing and rollback gates.
+All current results are from a production-runtime digital twin; physical-robot validation
+is the next proof.
+
+> [!NOTE]
+> DuckEgg is an independent extension of Pollen Robotics'
+> [`microduck`](https://github.com/pollen-robotics/microduck) and
+> [`microduck_rl`](https://github.com/pollen-robotics/microduck_rl). Their source is
+> preserved in this monorepo; see [PROVENANCE.md](PROVENANCE.md) for exact revisions,
+> licenses and the DuckEgg modification boundary.
 
 ## Watch the repairs
 
-Click either image to play the evidence-bound side-by-side simulation. The left panel is
-the unmodified production PPO policy; the right panel is the DuckEgg derivative. These are
-matched rollouts in the actual registered MicroDuck task, not a hand-authored animation.
+Click either image to play an evidence-bound side-by-side simulation. The left panel is the
+unmodified production PPO policy; the right panel is its DuckEgg derivative. These are
+matched rollouts in the actual registered MicroDuck task, not hand-authored animations.
+The walking video shows the original generation-85 behavioral proof. The later efficiency
+study produced different policy bytes while preserving the same source policy, 15° profile,
+final-affine scope and behavioral/runtime release standard; its candidates are documented
+in the linked machine records rather than represented by this video.
 
 ### StandUp: hidden voltage, sag and actuator delay
 
@@ -115,10 +119,11 @@ rather than asking one network to compromise across every possible hardware conf
 
 The result is a concrete product proof:
 
-> Starting with an existing production-format robot policy, DuckEgg can perform
-> RL-like, closed-loop post-training against a non-differentiable behavioral objective,
-> materially repair a defined simulated deployment failure, preserve the policy's runtime
-> interface, and produce a scoped, testable and reversible policy derivative.
+> Starting with a frozen production-format policy, DuckEgg can use forward-only EGGROLL
+> search to repair a defined simulated deployment failure, reject superficially strong
+> candidates that regress source behavior, and stop at the first candidate that passes the
+> complete production-runtime release gate—without changing the policy interface or
+> reopening its original training pipeline.
 
 The important product idea is larger than either experiment. DuckEgg is a
 **policy-maintenance and release layer** for embodied intelligence:
@@ -171,72 +176,39 @@ throughput and substantial scaling advantages over naive evolution strategies
 
 ## How DuckEgg works
 
-### 1. Seal the deployed artifact
+### 1. Seal the policy and failure contract
 
-The source ONNX file, observation and action dimensions, runtime slot, registered task and
-SHA-256 identity become an immutable `PolicyArtifactSpec`. The source is never inferred
-from a filename.
+DuckEgg binds the source ONNX hash and `61 -> 14` interface to a behavioral capability,
+a reversible deployment condition, and disjoint optimization, selection and release banks.
+The source is never inferred from a filename, and task return remains diagnostic.
 
-### 2. Define capability and deployment contracts
+### 2. Calibrate before spending search compute
 
-A `CapabilitySpec` defines commands, resets, lifecycle and behavioral success. A
-`DeploymentCondition` defines one reversible actuator, sensor, runtime, terrain, object or
-model mutation. A `PatchCampaign` binds those contracts to disjoint optimization,
-selection and held-out banks.
+The source policy must expose a real but repairable failure under a predeclared condition.
+Irrelevant and catastrophic conditions stop before optimization. The trunk center-of-mass
+and payload follow-ons both did exactly that: neither produced the required incident, so
+both ended at source-only calibration with zero optimizer evaluations.
 
-### 3. Calibrate before searching
+### 3. Search only the declared parameter surface
 
-The source policy is evaluated first. Calibration selects the useful frontier: conditions
-that expose a real, partial capability failure while leaving enough behavior for search to
-improve. Irrelevant and catastrophic conditions are filtered out before compute is spent.
-Predeclared trunk center-of-mass and payload ladders both failed this prerequisite and
-therefore stopped at source-only calibration with zero optimizer evaluations.
+EGGROLL evaluates low-rank perturbations with forward rollouts—no policy gradient,
+differentiable reward or PPO update. In the current walking workflow, losing a source
+success ranks worse than repairing another failure, and a shaping score cannot compensate
+for behavioral failure.
 
-### 4. Search a narrow parameter surface
+### 4. Qualify against the real release path
 
-The demonstrations freeze the observation normalizer, inference graph and representation.
-EGGROLL perturbs low-rank factors and changes only the output weight matrix and bias.
-Candidates are evaluated with forward rollouts; no policy gradient, differentiable reward
-or PPO update is used. The current walking objective is release-scope-aware: retaining a
-source success outranks repairing an additional failure, and shaping cannot compensate for
-behavioral failure.
+Plausible candidates are replayed through the real Rust `robotd` scheduler, ONNX runtime,
+previous-action state, scaling, filters, safety clamps and simulated `RobotIo` writes.
+Two disjoint paired banks enforce case-by-case source retention. Every accepted episode
+carries a trace audit, and training stops only after the complete candidate-bound gate
+passes.
 
-### 5. Select on behavior, not task return
+### 5. Route narrowly and retain rollback
 
-Selection is lexicographic and terminal-success-first. Stable hold, minimum performance
-per command and nominal retention are hard gates. Task return remains a diagnostic;
-behavioral success decides which policy advances. Plausible candidates proceed through
-candidate-bound qualification, and training stops only after the complete six-stage
-release gate passes.
-
-### 6. Replay through the production control loop
-
-Python supplies raw MuJoCo sensors and independent task diagnostics. The real Rust
-`robotd` remains authoritative for:
-
-- the exact 61D observation and command scheduler;
-- previous raw action state;
-- ONNX Runtime inference and policy identity;
-- home offsets and mode-specific action scaling;
-- head and leg target filters;
-- safety clamps; and
-- the absolute 14D targets written through the `RobotIo` seam at 50 Hz.
-
-Every accepted playback episode carries a trace audit. A missing write, mismatched policy
-hash or hidden-stage divergence is a rejected transport attempt, never a policy result.
-
-### 7. Build a scoped release envelope
-
-A derivative is eligible only for declared deployment profiles. Profile-specific releases
-must retain every source success across at least two disjoint paired banks for the profile
-they target. Unknown profiles fail closed to the exact source bytes. Multi-profile releases
-must pass the same case-by-case retention rule on every declared profile.
-
-### 8. Package, activate and roll back
-
-The Rust updater packages independently versioned model components, verifies evidence and
-policy identity, health-gates activation, and persists the exact previous source version
-for rollback.
+An eligible derivative runs only on its attested deployment profile. Original or unknown
+profiles retain the exact source bytes. The updater verifies identity and evidence,
+health-gates signed activation, and preserves the previous source version for rollback.
 
 ## Inside DuckEgg
 
@@ -280,54 +252,44 @@ evaluation-only path.
 
 ### One contract across a policy fleet
 
-The source-acceptance suite covers all nine production artifacts and eight scheduler
-transitions:
-
-| Policy | Capability | Runtime role |
-| --- | --- | --- |
-| `alpha_walking.onnx` | legged locomotion | walk |
-| `alpha_stand.onnx` | recovery and body pose | stand |
-| `alpha_sitstand.onnx` | sit/rise transition | sitstand |
-| `alpha_ground_pick.onnx` | ground pick | ground_pick |
-| `ball_kick_left.onnx` | left kick | kick_left |
-| `ball_kick_right.onnx` | right kick | kick_right |
-| `roller.onnx` | roller locomotion | walk in roller mode |
-| `roller_crouch.onnx` | roller crouch | ground_pick in roller mode |
-| `roulade.onnx` | forward roll | roulade |
-
-The deterministic fleet check passed **9/9 capability nodes and 8/8 transition edges**
-through the production-runtime trace. That establishes one common DuckEgg evaluation and
-release contract across the full policy fleet. StandUp and walking are the first two
-adapted policy classes; the remaining seven are ready-made expansion targets.
+The source-acceptance suite covers all nine production policy artifacts—walking, stand,
+sit/stand, ground pick, left and right kick, roller locomotion, roller crouch and roulade.
+The deterministic fleet check passed **9/9 capability nodes and 8/8 scheduler-transition
+edges** through the production-runtime trace. That establishes one common evaluation and
+release contract across the fleet; StandUp and walking are the first two adapted classes.
 
 ## Evidence and reproducibility
 
-| Proof | Evidence role | Candidate evaluations | Requested optimization steps | Timing evidence | Result |
-| --- | --- | ---: | ---: | --- | --- |
-| StandUp lag/power | historical fixed search | 51,200 | 61,440,000 | ~5.5 h reported, one A10G Large | 17/32 → **32/32**, nominal **32/32** |
-| Walking wedge foot | frozen historical reference | 51,200 | 51,200,000 | 13,698.7 s campaign, one A10G Large | **47/64 → 64/64** across two sealed banks |
-| Walking release-aware, three seeds | exact cost to first eligibility | 3,072 per seed | 3,078,000 per seed | no early-stop wall-time claim; jobs completed generation 9 | **3/3** eligible at generation 6 |
-| Walking release-aware, integrated | actual first-eligible stop | 2,560 | 2,565,000, plus 144,000 qualification | 4,840.9 s qualification only; end-to-end not retained | stopped at generation 5; complete gate passed |
+| Evidence | Behavioral or release result | Requested simulator work | What actually ran |
+| --- | --- | --- | --- |
+| StandUp | **17/32 → 32/32**, with nominal **32/32** retained | 61.44M optimization steps; 51,200 candidates | historical fixed 100-generation search; ~5.5 h reported |
+| Walking behavioral proof | **47/64 → 64/64**, with all 47 source successes retained | 51.2M optimization steps; 51,200 candidates | historical generation-85 derivative; 13,698.7 s campaign |
+| Walking repeatability | **3/3** seeds passed all six release stages at generation 6 | 3.078M optimization steps per seed; 3.254M median all-in | exact persisted prefixes and independent qualification; training jobs continued to generation 9 |
+| Walking integrated controller | generations 1–4 rejected; generation 5 passed the complete gate | 2.565M optimization + 0.144M qualification = **2.709M tracked steps** | one campaign stopped at its first eligible candidate |
 
-Against DuckEgg's own frozen walking reference, the three-seed median uses 6.012% of the
-requested optimization interactions, a 16.634x improvement; the separate integrated run
-uses 5.010%, a 19.961x improvement. The original 3.8- and 5.5-hour figures are historical,
-not current time-to-patch estimates. The integrated record retains a qualification-only
-wall time, so it would be misleading to present that value as an end-to-end replacement.
-No retraining or alternative-optimizer baseline was run, and no such comparative claim is
-made.
+The controlled comparison is against DuckEgg's own frozen walking EGGROLL reference. The
+three-seed median is 16.634x lower on the primary optimization-step measure and 15.734x
+lower after including current all-in work. The integrated run is 19.961x lower on
+optimization steps and 18.9x lower even after adding qualification. These are not claims
+against retraining or another optimizer, because neither baseline was run. The all-in
+ratios are deliberately conservative but not fully like-for-like: the historical record
+did not persist its equivalent qualification cost.
+
+The historical 3.8- and 5.5-hour figures remain useful absolute records, but they are not
+current time-to-patch estimates. The integrated record retains 4,840.9 seconds for its
+qualification commands, not for the complete campaign, so DuckEgg does not publish an
+unsupported end-to-end replacement time.
 
 Evidence entry points:
 
-- [machine-readable public evidence index](evidence/results.json);
-- [complete walking interaction-accounting study](microduck_rl/docs/experiments/eggroll_autopatch_efficiency_v1.md);
-- [three-seed first-eligibility record](microduck_rl/docs/experiments/eggroll_autopatch_efficiency_multiseed_20260903_v1.json);
-- [integrated first-eligible-stop record](microduck_rl/docs/experiments/eggroll_autopatch_efficiency_seed4_integrated_20260904_v8.json);
-- [walking proof and supersession record](microduck_rl/docs/experiments/eggroll_autopatch_findings.md);
-- [walking machine-readable experiment record](microduck_rl/docs/experiments/eggroll_walking_autopatch_2026-09.artifacts.json);
-- [walking two-bank non-regression decision](microduck_rl/docs/experiments/walking_wedge_gen85_two_bank_non_regression_v2.json);
-- [StandUp experiment record](microduck_rl/docs/experiments/eggroll_posttraining_2026-08.md);
-- [StandUp release artifact and exact verification](microduck_rl/policies/eggroll_posttraining/alpha_stand_lag16_v1/README.md); and
+- [public evidence index](evidence/results.json);
+- [complete interaction-accounting study](microduck_rl/docs/experiments/eggroll_autopatch_efficiency_v1.md),
+  with the [three-seed record](microduck_rl/docs/experiments/eggroll_autopatch_efficiency_multiseed_20260903_v1.json)
+  and [integrated-stop record](microduck_rl/docs/experiments/eggroll_autopatch_efficiency_seed4_integrated_20260904_v8.json);
+- [walking proof and supersession record](microduck_rl/docs/experiments/eggroll_autopatch_findings.md),
+  including the [two-bank non-regression decision](microduck_rl/docs/experiments/walking_wedge_gen85_two_bank_non_regression_v2.json);
+- [StandUp experiment record](microduck_rl/docs/experiments/eggroll_posttraining_2026-08.md)
+  and [release verification](microduck_rl/policies/eggroll_posttraining/alpha_stand_lag16_v1/README.md); and
 - [production deployment boundary](microduck/docs/robot/eggroll-policy.md).
 
 The releasable example derivatives are in [`policies/`](policies/). Production PPO source
@@ -426,24 +388,17 @@ rollback. Gate-aware stopping has reduced the walking benchmark's requested opti
 interactions by more than 10x. The next milestones turn that working digital-twin system
 into a broadly deployable product:
 
-1. **Run the first physical A/B.** When a MicroDuck is available, replay the same source,
-   failure, derivative and rollback sequence with current limits, stop conditions and
-   exact policy identity visible to the operator.
-2. **Turn telemetry into patches.** Connect deployment failures, customer acceptance tests
-   and hardware profiles directly to sealed DuckEgg campaigns and evidence-bound model
-   releases.
-3. **Expand across the policy fleet.** Apply the same engine to sit/stand, ground pick,
-   kicks, roller locomotion, roller crouch and roulade. The shared 61D/14D interface and
-   9/9 source acceptance suite already provide the common foundation.
-4. **Measure operational latency.** Capture comparable end-to-end campaign wall time and
-   accelerator cost, then reduce qualification and orchestration overhead without weakening
-   held-out validation, runtime parity or non-regression gates.
-5. **Test another externally motivated incident.** The predeclared center-of-mass and
-   payload ladders found a robust source policy rather than a repairable failure; use a real
-   independent incident to test cross-failure generality instead of tuning those ladders
-   after seeing the result.
-6. **Generalize beyond MicroDuck.** Demonstrate the same forward-only improvement loop on
-   another robot, policy architecture and non-differentiable acceptance test.
+1. **Run the first physical A/B.** Replay the same source, failure, derivative, scoped
+   activation and rollback sequence on a MicroDuck with limits and policy identity visible
+   to the operator.
+2. **Connect telemetry to the release loop.** Turn real deployment failures and customer
+   acceptance tests into sealed campaigns, while recording comparable end-to-end latency
+   and accelerator cost.
+3. **Test breadth without manufacturing a win.** Apply the engine to another production
+   policy and an independently motivated incident. The center-of-mass and payload ladders
+   found a robust source policy, so they will not be retuned after observing the result.
+4. **Generalize beyond MicroDuck.** Demonstrate the same forward-only loop on another
+   robot, policy architecture and non-differentiable acceptance test.
 
 The ambition is a system that keeps a fleet's policies improving as hardware, operating
 conditions and customer requirements change—without reopening every original training
