@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "product": "DuckEgg",
   "optimization_engine": "EGGROLL",
   "scope": "production-runtime digital twin; physical A/B is the next milestone",
-  "updated_at": "2026-09-01",
+  "updated_at": "2026-09-05",
   "claims": [
     {
       "id": "standup-lag16-v1",
@@ -21,6 +21,9 @@
       "nominal_cases": 32,
       "selection_metric": "terminal stable-standing success",
       "task_return_used_for_selection": false,
+      "candidate_evaluations": 51200,
+      "requested_optimization_simulator_steps": 61440000,
+      "reported_job_wall_time": "approximately 5.5 hours on one A10G Large",
       "onnx_max_abs_parity_error": 9.5367431640625e-7,
       "video": "microduck_rl/docs/assets/eggroll_posttraining/eggroll_posttraining_hero_v1.mp4",
       "readme_animation": "assets/standup-comparison.gif",
@@ -65,12 +68,100 @@
       "original_foot_cases": 32,
       "release_mode": "profile_specific",
       "second_disjoint_runtime_bank": "passed",
-      "production_routing_attestation": "next_release_gate",
+      "production_routing_attestation": "not attested for this historical derivative",
       "selection_metric": "terminal locomotion success with per-command floors",
       "task_return_used_for_selection": false,
+      "candidate_evaluations": 51200,
+      "optimization_world_rollouts": 204800,
+      "requested_optimization_simulator_steps": 51200000,
+      "campaign_wall_seconds": 13698.733898698003,
       "onnx_max_abs_parity_error": 4.76837158203125e-7,
       "video": "microduck_rl/docs/assets/eggroll_autopatch/walking_wedge_gen85_hero.mp4",
       "record": "microduck_rl/docs/experiments/eggroll_walking_autopatch_2026-09.artifacts.json"
+    },
+    {
+      "id": "walking-wedge15-release-aware-v1",
+      "task": "Mjlab-Velocity-Flat-MicroDuck",
+      "source_policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+      "changed_parameters": 1806,
+      "total_parameters": 197774,
+      "shifted_profile": "replacement-wedge-foot-pitch-15deg-v1",
+      "release_mode": "profile_specific",
+      "optimizer": "HyperscaleES EGGROLL",
+      "task_return_used_for_selection": false,
+      "alternative_optimizer_or_retraining_baseline_run": false,
+      "historical_reference": {
+        "candidate_evaluations": 51200,
+        "optimization_world_rollouts": 204800,
+        "requested_optimization_simulator_steps": 51200000,
+        "executed_optimization_simulator_steps": null,
+        "campaign_wall_seconds": 13698.733898698003
+      },
+      "three_seed_first_eligibility": {
+        "status": "strong-success-three-of-three-release-eligible",
+        "independent_seeds": 3,
+        "release_eligible_seeds": 3,
+        "first_eligible_generation_by_seed": [6, 6, 6],
+        "candidate_evaluations_per_seed": 3072,
+        "optimization_world_rollouts_per_seed_including_training_source_references": 12312,
+        "requested_optimization_simulator_steps_per_seed": 3078000,
+        "executed_optimization_simulator_steps_by_seed": [3077101, 3077239, 3077345],
+        "median_requested_all_in_steps_to_first_eligibility": 3254000,
+        "reference_to_result_efficiency_ratio": 16.634177,
+        "requested_optimization_fraction_of_reference": 0.0601171875,
+        "integrated_early_stop_executed": false,
+        "execution_note": "Exact persisted generation-6 prefixes and independently executed candidate-bound qualification; the original jobs completed generation 9.",
+        "record": "microduck_rl/docs/experiments/eggroll_autopatch_efficiency_multiseed_20260903_v1.json"
+      },
+      "integrated_first_eligible_stop": {
+        "status": "passed",
+        "job_id": "6a9a9002259f8e97255ddc10",
+        "stop_generation": 5,
+        "campaign_generation_limit": 9,
+        "all_prior_attempts_noneligible": true,
+        "candidate_evaluations": 2560,
+        "requested_optimization_simulator_steps": 2565000,
+        "executed_optimization_simulator_steps": 2564376,
+        "requested_optimization_fraction_of_reference": 0.05009765625,
+        "reference_to_result_efficiency_ratio": 19.961014,
+        "qualification_requested_simulator_steps": 144000,
+        "qualification_executed_simulator_steps": 138263,
+        "qualification_world_rollouts": 576,
+        "qualification_wall_seconds": 4840.914050522995,
+        "end_to_end_campaign_wall_seconds": null,
+        "timing_note": "Qualification wall time is not an end-to-end campaign wall time.",
+        "adapted_policy_sha256": "77970bcd949929e982b60c088c3055fe63504b748c43a2b5c496435b9be9c733",
+        "production_runtime_source_success": 21,
+        "production_runtime_adapted_success": 32,
+        "production_runtime_source_success_regressions": 0,
+        "confirmation_source_success": 22,
+        "confirmation_adapted_success": 32,
+        "confirmation_source_success_regressions": 0,
+        "onnx_max_abs_parity_error": 2.86102294921875e-6,
+        "profile_routing": "passed",
+        "signed_activation_exact_source_fallback_and_rollback": "passed",
+        "record": "microduck_rl/docs/experiments/eggroll_autopatch_efficiency_seed4_integrated_20260904_v8.json"
+      },
+      "claim_boundary": "Controlled comparison with DuckEgg's own frozen EGGROLL reference in simulation and the production-runtime digital twin; no physical-robot, cross-failure generality, retraining, or alternative-optimizer claim.",
+      "record": "microduck_rl/docs/experiments/eggroll_autopatch_efficiency_v1.md"
+    }
+  ],
+  "orthogonal_calibration_follow_ons": [
+    {
+      "condition": "forward trunk center-of-mass ladder",
+      "outcome": "no eligible incident; every profile passed 32/32",
+      "source_policy_episodes": 160,
+      "requested_simulator_steps": 40000,
+      "candidate_optimization_evaluations": 0,
+      "record": "microduck_rl/docs/experiments/walking_trunk_com_calibration_result_v2.json"
+    },
+    {
+      "condition": "trunk payload ladder",
+      "outcome": "no eligible incident; nominal and +50 g passed 32/32, +100 g through +200 g passed 31/32",
+      "source_policy_episodes": 160,
+      "requested_simulator_steps": 40000,
+      "candidate_optimization_evaluations": 0,
+      "record": "microduck_rl/docs/experiments/walking_trunk_payload_calibration_result_v1.json"
     }
   ],
   "fleet_contract": {
@@ -82,9 +173,10 @@
   },
   "next_steps": [
     "physical A/B validation",
-    "production profile-routing attestation",
+    "connect telemetry and acceptance tests to sealed campaigns",
     "adaptation across the remaining production policy classes",
-    "controlled adaptation-efficiency comparisons",
+    "comparable end-to-end latency and accelerator-cost measurement",
+    "an externally motivated orthogonal incident",
     "a second robot and policy architecture"
   ]
 }

@@ -9,7 +9,7 @@ public-evidence changes required to understand and reproduce the work.
 | Directory | Upstream | Snapshot basis | License |
 | --- | --- | --- | --- |
 | `microduck/` | <https://github.com/pollen-robotics/microduck> | commit `590b986bd8c0d50ae02cb3ea2f59c463b6828168` plus the DuckEgg runtime working tree described below | Apache-2.0, with retained third-party notices |
-| `microduck_rl/` | <https://github.com/pollen-robotics/microduck_rl> | EGGROLL integration commit `8b85e9d` on branch `feat/eggroll-posttraining` | Apache-2.0 |
+| `microduck_rl/` | <https://github.com/pollen-robotics/microduck_rl> | DuckEgg export commit `42b9868dc4eef8136cb250107ea52e6e03e9f4a4` on branch `feat/eggroll-autopatch-efficiency` | Apache-2.0 |
 | EGGROLL dependency | <https://github.com/ESHyperscale/HyperscaleES> | fetched by `uv` at commit `b77f7d6f91238fd575313e946b9cad21e0a74b32`; not vendored | GPL-3.0-only |
 
 The upstream license files remain at `microduck/LICENSE` and `microduck_rl/LICENSE`.
@@ -26,12 +26,17 @@ was supplied). Downstream users should preserve and comply with those notices.
 
 The training repository contains DuckEgg's generic `mjlab_microduck.autopatch` engine,
 registered-task evaluation, runtime trace auditing, sealed campaign and release contracts,
-EGGROLL output-layer post-training, paired non-regression verification, evidence-bound
-export, release packaging records, tests and product/experiment documentation.
+EGGROLL output-layer post-training, release-scope-aware fitness, gate-triggered
+qualification and first-eligible stopping, deterministic interaction accounting, paired
+non-regression verification, evidence-bound export, release packaging records, tests and
+product/experiment documentation.
 
-The clean source was exported from commit `8b85e9d` so local virtual environments, logs,
-checkpoints, caches, private job artifacts and the unrelated Hyperscale development
-checkout are absent.
+The clean source was exported from commit
+`42b9868dc4eef8136cb250107ea52e6e03e9f4a4` so local virtual environments, logs,
+checkpoints, caches, private job artifacts, credentials and the unrelated Hyperscale
+development checkout are absent. The repository-root README, compact public evidence index,
+media metadata and example-policy placement are DuckEgg's public packaging layer rather
+than files copied from that source commit.
 
 ## What changed in `microduck`
 
